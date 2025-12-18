@@ -1,31 +1,30 @@
-# Dossier fil rouge
+# EC01 - Landing Page
 
 ## Description
 
-Ce dépôt contient les éléments du projet fil rouge organisés par exercices.
+Page d'accueil pour l'atelier.
 
-## Structure du projet
+## Contenu de la Page
 
-- EC01/
-- EC02/
-- EC03/
-- EC04/
-- EC05/
-- EC06/
-- EC07/
-- EC08/
-- EC09/
-- EC10/
+### Header
+- Formations, Ateliers, à propos, se connecter
+- Logo : 
+- Menu : Accueil, Exercices, Contact, 
 
-## Installation
+### Hero Section
 
-_À compléter selon les besoins du projet_
+- Titre principal : Développez vos compétences 
+- Sous titre : Des ateliers et des formations collaboratives pour booster votre carrière
+- Description du projet : 
+- Bouton "S'inscrire gratuitement" 
 
-## Utilisation
+### Caractéristiques
 
-_À compléter selon les besoins du projet_
+- 3 cartes : Apprentissage, Formations, Projets
 
-## Auteur
+- Aperçu du projet final 
 
-_À compléter_
+### Bouton s'inscrire 
+
+
 
