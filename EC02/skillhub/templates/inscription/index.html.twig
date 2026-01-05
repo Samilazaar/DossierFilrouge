@@ -13,12 +13,12 @@
 				<div class="popup-content">
 					<h2>Inscription réussie!</h2>
 					<p>{{ message }}</p>
-					<button onclick="this.closest('.popup-overlay').style.display='none'" class="btn-primary">Fermer</button>
+					<button onclick="this.closest('.popup-overlay').style.display='none'" class="btn btn-primary">Fermer</button>
 				</div>
 			</div>
 		{% endif %}
 
-		<form method="POST" action="/index.php/inscription">
+		<form method="POST" action="{{ path('app_inscription') }}" data-turbo="false">
 			<div class="form-group">
 				<label for="nom">Nom :</label>
 				<input type="text" id="nom" name="nom" required>
@@ -44,9 +44,9 @@
 				<input type="password" id="password_confirm" name="password_confirm" required>
 			</div>
 
-			<button type="submit" class="btn-primary">S'inscrire</button>
+			<button type="submit" class="btn btn-primary btn-full">S'inscrire</button>
 		</form>
 
-		<p>Déjà inscrit ? <a href="/index.php/connexion" class="auth-link">Connectez-vous</a></p>
+		<p class="auth-link">Déjà inscrit ? <a href="{{ path('app_connexion') }}">Connectez-vous</a></p>
 	</div>
 {% endblock %}

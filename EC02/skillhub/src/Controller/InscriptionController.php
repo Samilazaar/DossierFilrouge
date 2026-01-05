@@ -2,26 +2,31 @@
 
 namespace App\Controller;
 
-class InscriptionController
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+class InscriptionController extends AbstractController
 {
-    public function index(): string
+    #[Route('/inscription', name: 'app_inscription')]
+    public function index(Request $request): Response
     {
-        $success = false;
-        $message = '';
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nom = $_POST['nom'] ?? '';
-            $prenom = $_POST['prenom'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $password = $_POST['password'] ?? '';
-            $passwordConfirm = $_POST['password_confirm'] ?? '';
-
-            $success = true;
-            $message = 'Inscription réussie ! Vous pouvez maintenant vous connecter.';
+        if ($request->isMethod('POST')) {
+            $email = $request->request->get('email');
+            $password = $request->request->get('password');
+            $nom = $request->request->get('nom');
+            $prenom = $request->request->get('prenom');
+            
+            return $this->render('inscription/index.html.twig', [
+                'page_title' => 'Inscription',
+                'success' => true,
+                'message' => 'Inscription réussie ! Vous pouvez maintenant vous connecter.',
+            ]);
         }
-
-        ob_start();
-        require __DIR__ . '/../../templates/inscription/index.html.twig';
-        return ob_get_clean();
+        
+        return $this->render('inscription/index.html.twig', [
+            'page_title' => 'Inscription',
+        ]);
     }
 }
