@@ -1,126 +1,77 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <title>SkillHub - La plateforme pour apprendre</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="SkillHub - La plateforme pour apprendre"
-    />
-    <!-- TODO favicon -->
-    <link rel="icon" href="" />
-    <link rel="stylesheet" href="index.css" />
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue sur SkillHub</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
     <header>
-      <nav>
-        <ul>
-          <!-- TODO logo-->
-          <li>
-            <a href="#hero-section" aria-label="Aller sur la section accueil">
-              Accueil
-            </a>
-          </li>
-          <li>
-            <a href="#nos-valeurs" aria-label="Aller sur la section nos valeurs">
-              Nos Valeurs
-            </a>
-          </li>
-          <!-- Todo ajouter d'autres-->
-          <li>
-            <a href="/connexion" class="button-link">Connexion</a>
-          </li>
-          <li>
-            <a href="/inscription" class="button-link">Inscription</a>
-          </li>
-        </ul>
-      </nav>
+        <nav>
+            <ul>
+                <li><a href="#hero-section" aria-label="Aller sur la section accueil">Accueil</a></li>
+                <li><a href="#nos-valeurs" aria-label="Aller sur la section nos valeurs">Nos Valeurs</a></li>
+                <li><a href="../EC02/dashboard/index.html" class="button-link">Connexion</a></li>
+                <li><a href="../EC02/dashboard/inscription.html" class="button-link">Inscription</a></li>
+            </ul>
+        </nav>
     </header>
     <main>
-      <section
-        id="hero-section"
-        aria-labelledby="hero-title"
-      >
-        <!--TODO image-->
-        <h1 id="hero-title">
-          SkillHub - La plateforme pour apprendre
-        </h1>
-        <h2>
-          SkillHub est une plateforme pour apprendre de nouvelles compétences en
-          ligne.
-        </h2>
-        <button
-          type="button"
-          aria-label="Bouton Inscription Apprenant - Aller sur la page inscription apprenant"
-        >
-          Inscription Apprenant
-        </button>
-      </section>
-      <section id="nos-valeurs" aria-labelledby="valeurs-title">
-        <h2 id="valeurs-title">Nos Valeurs</h2>
-        <article
-          aria-labelledby="qualite-title"
-        >
-          <h3 id="qualite-title">Qualité Pédagogique</h3>
-          <p>
-            Nous assurons une qualité pédagogique de haut niveau de nos
-            formateurs
-          </p>
-        </article>
-        <article
-          aria-labelledby="relation-title"
-        >
-          <h3 id="relation-title">Mise en relation facile</h3>
-          <p>
-            Nous mettons en relation facilement les apprenants avec les
-            formateurs
-          </p>
-        </article>
-        <article
-          aria-labelledby="formations-title"
-        >
-          <h3 id="formations-title">Formations adaptées</h3>
-          <p>Nous adaptons les formations à vos besoins</p>
-        </article>
-      </section>
+        <section id="hero-section" aria-labelledby="hero-title">
+            <h1 id="hero-title">Bienvenue sur SkillHub</h1>
+            <h2>SkillHub est une plateforme pour apprendre de nouvelles compétences en ligne.</h2>
+            <button type="button" aria-label="Bouton Inscription Apprenant - Aller sur la page inscription apprenant">
+                Inscription Apprenant
+            </button>
+            <a href="formateurs.html" class="button-link" aria-label="Voir la liste des formateurs disponibles">
+                Voir les formateurs
+            </a>
+        </section>
+        <section id="nos-valeurs" aria-labelledby="valeurs-title">
+            <h2 id="valeurs-title">Nos Valeurs</h2>
+            <article aria-labelledby="qualite-title">
+                <h3 id="qualite-title">Qualité Pédagogique</h3>
+                <p>Nous assurons une qualité pédagogique de haut niveau de nos formateurs</p>
+            </article>
+            <article aria-labelledby="relation-title">
+                <h3 id="relation-title">Mise en relation facile</h3>
+                <p>Nous mettons en relation facilement les apprenants avec les formateurs</p>
+            </article>
+            <article aria-labelledby="formations-title">
+                <h3 id="formations-title">Formations adaptées</h3>
+                <p>Nous adaptons les formations à vos besoins</p>
+            </article>
+        </section>
+        <section id="technologies">
+            <h2>Technologies utilisées</h2>
+            <ul>
+                <li>HTML5</li>
+                <li>CSS3</li>
+                <li>JavaScript</li>
+                <li>PHP</li>
+                <li>MySQL</li>
+            </ul>
+        </section>
     </main>
     <footer>
-      <!--TODO logo-->
-      <nav>
-        <ul>
-          <li>
-            <a href="#hero-section" aria-label="Aller sur la section accueil">
-              Accueil
-            </a>
-          </li>
-          <li>
-            <a href="#nos-valeurs" aria-label="Aller sur la section nos valeurs">
-              Nos Valeurs
-            </a>
-          </li>
-          <li>
-            <a href="/connexion" aria-label="Aller sur la page connexion">
-              Connexion
-            </a>
-          </li>
-          <li>
-            <a href="/inscription" aria-label="Aller sur la page inscription">
-              Inscription
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <address>
-        <ul>
-          <li>Téléphone : <a href="tel:+33102030405">01 02 03 04 05</a></li>
-          <li>Email : <a href="mailto:contact@skillhub.fr">contact@skillhub.fr</a></li>
-          <li>Adresse : 123 Rue de la Paix, 75000 Paris, France</li>
-        </ul>
-      </address>
-      <p>
-        <small>Copyright 2025 SkillHub - Tous droits réservés</small>
-      </p>
+        <nav>
+            <ul>
+                <li><a href="#hero-section" aria-label="Aller sur la section accueil">Accueil</a></li>
+                <li><a href="#nos-valeurs" aria-label="Aller sur la section nos valeurs">Nos Valeurs</a></li>
+                <li><a href="../EC02/dashboard/index.html" aria-label="Aller sur la page connexion">Connexion</a></li>
+                <li><a href="../EC02/dashboard/inscription.html" aria-label="Aller sur la page inscription">Inscription</a></li>
+            </ul>
+        </nav>
+        <address>
+            <ul>
+                <li>Téléphone : <a href="tel:+33102030405">01 02 03 04 05</a></li>
+                <li>Email : <a href="mailto:contact@skillhub.fr">contact@skillhub.fr</a></li>
+                <li>Adresse : 123 Rue de la Paix, 75000 Paris, France</li>
+            </ul>
+        </address>
+        <p><small>Copyright 2025 SkillHub - Tous droits réservés</small></p>
     </footer>
-  </body>
+    <script src="js/main.js"></script>
+</body>
 </html>

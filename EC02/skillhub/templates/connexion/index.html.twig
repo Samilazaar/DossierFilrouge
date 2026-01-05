@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ page_title }} - SkillHub
+{% endblock %}
+
+{% block body %}
+	<div class="auth-container">
+		<h1>{{ page_title }}</h1>
+
+		{% if success is defined and success %}
+			<div class="popup-overlay" style="display: flex;">
+				<div class="popup-content">
+					<h2>Succès!</h2>
+					<p>{{ message }}</p>
+					<button onclick="this.closest('.popup-overlay').style.display='none'" class="btn-primary">Fermer</button>
+					<a href="/index.php/dashboard" class="btn-link">Aller au Dashboard</a>
+				</div>
+			</div>
+		{% endif %}
+
+		{% if error is defined and error %}
+			<div class="error-message">
+				<p>{{ errorMessage }}</p>
+			</div>
+		{% endif %}
+
+		<form method="POST" action="/index.php/connexion">
+			<div class="form-group">
+				<label for="email">Email :</label>
+				<input type="email" id="email" name="email" required>
+			</div>
+
+			<div class="form-group">
+				<label for="password">Mot de passe :</label>
+				<input type="password" id="password" name="password" required minlength="6">
+			</div>
+
+			<button type="submit" class="btn-primary">Se connecter</button>
+		</form>
+
+		<p>Pas encore de compte ? <a href="/index.php/inscription" class="auth-link">S'inscrire</a></p>
+
+		<div class="test-accounts">
+			<h3>Comptes de test:</h3>
+			<p><strong>test@skillhub.com</strong> / password123</p>
+			<p><strong>admin@skillhub.com</strong> / admin123</p>
+		</div>
+
+		<a href="../EC01/index.html" class="back-link">← Retour à l'accueil</a>
+	</div>
+{% endblock %}
