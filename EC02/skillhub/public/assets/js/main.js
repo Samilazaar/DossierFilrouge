@@ -40,5 +40,5 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(card);
     });
 
-    console.log('SkillHub chargé avec succès!');
+    console.log('SkillHub EC02 - Symfony avec Twig Templates chargé avec succès!');
 });

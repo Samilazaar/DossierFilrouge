@@ -54,7 +54,7 @@ class ConnexionController extends AbstractController
                 ]);
             }
         }
-        
+
         return $this->render('connexion/index.html.twig', [
             'page_title' => 'Connexion',
         ]);

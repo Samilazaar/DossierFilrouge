@@ -15,16 +15,19 @@ class InscriptionController extends AbstractController
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
             $password = $request->request->get('password');
+            $passwordConfirm = $request->request->get('password_confirm');
             $nom = $request->request->get('nom');
             $prenom = $request->request->get('prenom');
-            
+
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
             return $this->render('inscription/index.html.twig', [
                 'page_title' => 'Inscription',
                 'success' => true,
                 'message' => 'Inscription réussie ! Vous pouvez maintenant vous connecter.',
             ]);
         }
-        
+
         return $this->render('inscription/index.html.twig', [
             'page_title' => 'Inscription',
         ]);
