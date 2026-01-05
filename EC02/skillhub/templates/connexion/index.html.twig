@@ -14,7 +14,7 @@
 					<h2>Succès!</h2>
 					<p>{{ message }}</p>
 					<button onclick="this.closest('.popup-overlay').style.display='none'" class="btn btn-primary">Fermer</button>
-					<a href="/dashboard" class="btn btn-link">Aller au Dashboard</a>
+					<a href="{{ path('app_dashboard') }}" class="btn btn-link">Aller au Dashboard</a>
 				</div>
 			</div>
 		{% endif %}
@@ -42,7 +42,7 @@
 		<p class="auth-link">Pas encore de compte ? <a href="{{ path('app_inscription') }}">S'inscrire</a></p>
 
 		<div class="test-accounts">
-			<h3>Comptes de test (mode simulation):</h3>
+			<h3>Comptes de test :</h3>
 			<p><strong>test@skillhub.com</strong> / password123</p>
 			<p><strong>admin@skillhub.com</strong> / admin123</p>
 		</div>

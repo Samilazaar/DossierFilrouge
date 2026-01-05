@@ -48,7 +48,7 @@ class FormateurController extends AbstractController
                 'bio' => 'Expert en cybersécurité, spécialisé en sécurisation d\'applications web.',
             ],
         ];
-        
+
         return $this->render('formateur/liste.html.twig', [
             'page_title' => 'Liste des Formateurs',
             'formateurs' => $formateurs,
