@@ -2,9 +2,14 @@
 
 namespace App\Controller;
 
-class DashboardController
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+class DashboardController extends AbstractController
 {
-    public function index(): string
+    #[Route('/dashboard', name: 'app_dashboard')]
+    public function index(): Response
     {
         $ateliers = [
             [
@@ -36,12 +41,15 @@ class DashboardController
             ],
         ];
 
-        ob_start();
-        require __DIR__ . '/../../templates/dashboard/index.html.twig';
-        return ob_get_clean();
+        return $this->render('dashboard/index.html.twig', [
+            'page_title' => 'Tableau de Bord',
+            'ateliers' => $ateliers,
+            'active_view' => 'ateliers',
+        ]);
     }
 
-    public function inscriptions(): string
+    #[Route('/dashboard/inscriptions', name: 'app_dashboard_inscriptions')]
+    public function inscriptions(): Response
     {
         $mesInscriptions = [
             [
@@ -54,8 +62,10 @@ class DashboardController
             ],
         ];
 
-        ob_start();
-        require __DIR__ . '/../../templates/dashboard/inscriptions.html.twig';
-        return ob_get_clean();
+        return $this->render('dashboard/inscriptions.html.twig', [
+            'page_title' => 'Mes Inscriptions',
+            'inscriptions' => $mesInscriptions,
+            'active_view' => 'inscriptions',
+        ]);
     }
 }

@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ page_title }} - SkillHub
+{% endblock %}
+
+{% block body %}
+	<section class="hero" id="hero-section">
+		<div class="hero-content">
+			<h1>{{ page_title }}</h1>
+			<p>SkillHub est une plateforme pour apprendre de nouvelles compétences en ligne.</p>
+			<div class="hero-buttons">
+				<a href="{{ path('app_inscription') }}" class="btn btn-primary">Inscription Apprenant</a>
+				<a href="{{ path('app_formateurs') }}" class="btn btn-secondary">Voir les formateurs</a>
+			</div>
+		</div>
+	</section>
+
+	<section class="features" id="nos-valeurs">
+		<div class="container">
+			<h2>Nos Valeurs</h2>
+			<div class="features-grid">
+				<div class="feature-card">
+					<div class="feature-icon">🎓</div>
+					<h3>Qualité Pédagogique</h3>
+					<p>Nous assurons une qualité pédagogique de haut niveau de nos formateurs</p>
+				</div>
+				<div class="feature-card">
+					<div class="feature-icon">🤝</div>
+					<h3>Mise en relation facile</h3>
+					<p>Nous mettons en relation facilement les apprenants avec les formateurs</p>
+				</div>
+				<div class="feature-card">
+					<div class="feature-icon">📚</div>
+					<h3>Formations adaptées</h3>
+					<p>Nous adaptons les formations à vos besoins</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	{% if features is defined %}
+	<section class="technologies">
+		<div class="container">
+			<h2>Technologies utilisées</h2>
+			<ul class="tech-list">
+				{% for feature in features %}
+				<li>{{ feature }}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</section>
+	{% endif %}
+{% endblock %}

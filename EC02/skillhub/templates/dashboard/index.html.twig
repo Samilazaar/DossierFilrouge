@@ -8,73 +8,38 @@
 	<div class="dashboard-container">
 		<aside class="sidebar">
 			<h2>SkillHub</h2>
-			<ul class="nav-links">
-				<li>
-					<a href="/index.php/dashboard" class="{% if active_view == 'ateliers' %}active{% endif %}">
-						📚 Catalogue d'ateliers
-					</a>
-				</li>
-				<li>
-					<a href="/index.php/dashboard/inscriptions" class="{% if active_view == 'inscriptions' %}active{% endif %}">
-						✅ Mes inscriptions
-					</a>
-				</li>
-				<li>
-					<a href="/index.php/connexion">
-						🔐 Déconnexion
-					</a>
-				</li>
-			</ul>
+			<nav class="sidebar-nav">
+				<a href="{{ path('app_dashboard') }}" class="{% if active_view == 'ateliers' %}active{% endif %}">
+					📚 Catalogue d'ateliers
+				</a>
+				<a href="{{ path('app_dashboard_inscriptions') }}" class="{% if active_view == 'inscriptions' %}active{% endif %}">
+					✅ Mes inscriptions
+				</a>
+				<a href="{{ path('app_connexion') }}">
+					🔐 Déconnexion
+				</a>
+			</nav>
 		</aside>
 
 		<main class="main-content">
 			<h1>{{ page_title }}</h1>
 
-			{% if active_view == 'ateliers' and ateliers is defined %}
-				<div class="ateliers-grid">
-					{% for atelier in ateliers %}
-						<div class="atelier-card">
-							<h3>{{ atelier.titre }}</h3>
-							<div class="atelier-info">
-								<p>👨‍🏫 Formateur: {{ atelier.formateur }}</p>
-								<p>📅 Date: {{ atelier.date }}</p>
-								<p>⏱️ Durée: {{ atelier.duree }}</p>
-								<p>👥 Places: {{ atelier.places }}</p>
-							</div>
-							<button class="btn-inscrire" {% if atelier.inscrit %}disabled{% endif %}>
-								{% if atelier.inscrit %}Déjà inscrit{% else %}S'inscrire{% endif %}
-							</button>
+			<div class="ateliers-grid">
+				{% for atelier in ateliers %}
+					<div class="atelier-card">
+						<h3>{{ atelier.titre }}</h3>
+						<div class="atelier-info">
+							<p>👨‍🏫 Formateur: {{ atelier.formateur }}</p>
+							<p>📅 Date: {{ atelier.date }}</p>
+							<p>⏱️ Durée: {{ atelier.duree }}</p>
+							<p>👥 Places: {{ atelier.places }}</p>
 						</div>
-					{% endfor %}
-				</div>
-			{% endif %}
-
-			{% if active_view == 'inscriptions' and inscriptions is defined %}
-				<div class="table-container">
-					<table>
-						<thead>
-							<tr>
-								<th>Atelier</th>
-								<th>Formateur</th>
-								<th>Date</th>
-								<th>Durée</th>
-								<th>Statut</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for inscription in inscriptions %}
-								<tr>
-									<td>{{ inscription.titre }}</td>
-									<td>{{ inscription.formateur }}</td>
-									<td>{{ inscription.date }}</td>
-									<td>{{ inscription.duree }}</td>
-									<td><span class="statut-badge statut-{{ inscription.statut }}">{{ inscription.statut|capitalize }}</span></td>
-								</tr>
-							{% endfor %}
-						</tbody>
-					</table>
-				</div>
-			{% endif %}
+						<button class="btn-inscrire" {% if atelier.inscrit %}disabled{% endif %}>
+							{% if atelier.inscrit %}Déjà inscrit{% else %}S'inscrire{% endif %}
+						</button>
+					</div>
+				{% endfor %}
+			</div>
 		</main>
 	</div>
 {% endblock %}

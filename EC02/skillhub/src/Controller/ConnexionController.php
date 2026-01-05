@@ -2,9 +2,15 @@
 
 namespace App\Controller;
 
-class ConnexionController
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+class ConnexionController extends AbstractController
 {
-    public function index(): string
+    #[Route('/connexion', name: 'app_connexion')]
+    public function index(Request $request): Response
     {
         $testUsers = [
             [
@@ -19,14 +25,9 @@ class ConnexionController
             ],
         ];
 
-        $success = false;
-        $message = '';
-        $error = false;
-        $errorMessage = '';
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = $_POST['email'] ?? '';
-            $password = $_POST['password'] ?? '';
+        if ($request->isMethod('POST')) {
+            $email = $request->request->get('email');
+            $password = $request->request->get('password');
 
             $found = false;
             $userNom = '';
@@ -40,16 +41,22 @@ class ConnexionController
             }
 
             if ($found) {
-                $success = true;
-                $message = "Bienvenue {$userNom} ! Connexion réussie.";
+                return $this->render('connexion/index.html.twig', [
+                    'page_title' => 'Connexion',
+                    'success' => true,
+                    'message' => "Bienvenue {$userNom} ! Connexion réussie.",
+                ]);
             } else {
-                $error = true;
-                $errorMessage = 'Email ou mot de passe incorrect.';
+                return $this->render('connexion/index.html.twig', [
+                    'page_title' => 'Connexion',
+                    'error' => true,
+                    'errorMessage' => 'Email ou mot de passe incorrect.',
+                ]);
             }
         }
-
-        ob_start();
-        require __DIR__ . '/../../templates/connexion/index.html.twig';
-        return ob_get_clean();
+        
+        return $this->render('connexion/index.html.twig', [
+            'page_title' => 'Connexion',
+        ]);
     }
 }

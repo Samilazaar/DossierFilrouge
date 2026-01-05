@@ -2,9 +2,14 @@
 
 namespace App\Controller;
 
-class FormateurController
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+class FormateurController extends AbstractController
 {
-    public function liste(): string
+    #[Route('/formateurs', name: 'app_formateurs')]
+    public function liste(): Response
     {
         $formateurs = [
             [
@@ -43,9 +48,10 @@ class FormateurController
                 'bio' => 'Expert en cybersécurité, spécialisé en sécurisation d\'applications web.',
             ],
         ];
-
-        ob_start();
-        require __DIR__ . '/../../templates/formateur/liste.html.twig';
-        return ob_get_clean();
+        
+        return $this->render('formateur/liste.html.twig', [
+            'page_title' => 'Liste des Formateurs',
+            'formateurs' => $formateurs,
+        ]);
     }
 }

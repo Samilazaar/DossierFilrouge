@@ -12,7 +12,220 @@ body {
     background-color: #f5f5f5;
 }
 
-/* Dashboard Layout */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Header */
+.header {
+    background-color: #2c3e50;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 1rem;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a:focus {
+    background-color: #34495e;
+}
+
+.btn-primary {
+    background-color: #667eea;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero-content p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: white;
+    color: #667eea;
+}
+
+.btn-primary:hover {
+    background-color: #f8f9fa;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* Features */
+.features {
+    padding: 4rem 2rem;
+}
+
+.features h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+    color: #7f8c8d;
+}
+
+/* Technologies */
+.technologies {
+    padding: 2rem;
+    background-color: white;
+    margin: 2rem auto;
+    border-radius: 10px;
+}
+
+.technologies h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.tech-list {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    list-style: none;
+}
+
+.tech-list li {
+    background-color: #667eea;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+/* Footer */
+.footer {
+    background-color: #2c3e50;
+    color: white;
+    padding: 2rem 0;
+    margin-top: 4rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-section h3 {
+    margin-bottom: 1rem;
+}
+
+.footer-section p {
+    color: #ecf0f1;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #34495e;
+}
+
+/* Dashboard */
 .dashboard-container {
     display: flex;
     min-height: 100vh;
@@ -30,26 +243,22 @@ body {
     font-size: 1.5rem;
 }
 
-.nav-links {
-    list-style: none;
-    padding: 0;
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.nav-links li {
-    margin-bottom: 1rem;
-}
-
-.nav-links a {
+.sidebar-nav a {
     color: white;
     text-decoration: none;
-    display: block;
     padding: 0.75rem 1rem;
     border-radius: 5px;
     transition: background-color 0.3s;
 }
 
-.nav-links a:hover,
-.nav-links a.active {
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
     background-color: #34495e;
 }
 
@@ -58,7 +267,6 @@ body {
     padding: 2rem;
 }
 
-/* Ateliers Grid */
 .ateliers-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -143,7 +351,7 @@ th {
     color: #155724;
 }
 
-/* Auth Container */
+/* Auth */
 .auth-container {
     max-width: 500px;
     margin: 2rem auto;
@@ -170,26 +378,12 @@ th {
     border-radius: 4px;
 }
 
-.btn-primary {
-    background-color: #667eea;
-    color: white;
-    padding: 0.75rem 2rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-    width: 100%;
-}
-
-.btn-primary:hover {
-    background-color: #5568d3;
-}
-
 .auth-link {
-    display: block;
     text-align: center;
     margin-top: 1rem;
+}
+
+.auth-link a {
     color: #667eea;
     text-decoration: none;
 }
@@ -212,7 +406,7 @@ th {
     color: #6c757d;
 }
 
-/* Formateurs Grid */
+/* Formateurs */
 .formateurs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -321,13 +515,6 @@ th {
     text-decoration: none;
 }
 
-.back-link {
-    display: block;
-    margin-top: 1rem;
-    color: #6c757d;
-    text-decoration: none;
-}
-
 .error-message {
     background-color: #f8d7da;
     color: #721c24;
@@ -337,7 +524,27 @@ th {
 }
 
 /* Responsive */
-@media (max-width:768px) {
+@media (max-width: 768px) {
+    .nav {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .features-grid,
+    .ateliers-grid,
+    .formateurs-grid {
+        grid-template-columns: 1fr;
+    }
+
     .dashboard-container {
         flex-direction: column;
     }
@@ -346,8 +553,7 @@ th {
         width: 100%;
     }
 
-    .ateliers-grid,
-    .formateurs-grid {
+    .footer-content {
         grid-template-columns: 1fr;
     }
 }

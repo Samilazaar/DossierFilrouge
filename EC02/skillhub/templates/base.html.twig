@@ -1,18 +1,23 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}SkillHub{% endblock %}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        {% block stylesheets %}
-        <link rel="stylesheet" href="/assets/css/style.css">
-        {% endblock %}
-    </head>
-    <body>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SkillHub{% endblock %}</title>
+    {% block stylesheets %}
+    <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet">
+    {% endblock %}
+    {% block javascripts %}
+    <script src="{{ asset('assets/js/main.js') }}"></script>
+    {% endblock %}
+</head>
+<body>
+    {% include 'partials/_header.html.twig' %}
+    
+    <main>
         {% block body %}{% endblock %}
-
-        {% block javascripts %}
-        <script src="/assets/js/main.js"></script>
-        {% endblock %}
-    </body>
+    </main>
+    
+    {% include 'partials/_footer.html.twig' %}
+</body>
 </html>
