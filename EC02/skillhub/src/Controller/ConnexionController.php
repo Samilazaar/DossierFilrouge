@@ -25,6 +25,8 @@ class ConnexionController extends AbstractController
             ],
         ];
 
+        
+
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
             $password = $request->request->get('password');
