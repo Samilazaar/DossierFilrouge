@@ -87,7 +87,7 @@ class DashboardController extends AbstractController
         if (!$user) {
             return $this->redirectToRoute('app_connexion');
         }
-        $competences=$user->getCompetences();
+        $competences=$user->getCompetences() ?? [];
         $ateliers=$this->repository->findAllAteliers();
         $recommendation=$this->iaService->recommendAtelier($competences, $ateliers);
         return $this->render('dashboard/recommend_atelier.html.twig', [
