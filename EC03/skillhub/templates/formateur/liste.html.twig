@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ page_title }} - SkillHub
+{% endblock %}
+
+{% block body %}
+	<div class="container">
+		<h1>{{ page_title }}</h1>
+
+		<div class="formateurs-grid">
+			{% for formateur in formateurs %}
+				<div class="formateur-card">
+					<div class="formateur-header">
+						<div class="formateur-avatar">
+							{{ formateur.user.prenom|first }}
+						</div>
+						<h2 class="formateur-name">{{ formateur.user.prenom }} {{ formateur.user.nom }}</h2>
+					</div>
+
+					<p class="formateur-specialite">🎓 {{ formateur.specialite }}</p>
+					<p class="formateur-info">⏱️ Expérience: {{ formateur.experiences }}</p>
+					<p class="formateur-info">📧 <a href="mailto:{{ formateur.user.email }}" class="formateur-email">{{ formateur.user.email }}</a></p>
+					<p class="formateur-bio">{{ formateur.bio }}</p>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ page_title }}
+	- SkillHub
+{% endblock %}
+
+{% block body %}
+	<div class="auth-container">
+		<h1>{{ page_title }}</h1>
+
+		{% if errors is defined and errors|length > 0 %}
+			<div class="error-message">
+				{% for error in errors %}
+					<p>{{ error }}</p>
+				{% endfor %}
+			</div>
+		{% endif %}
+
+		{% if success is defined and success %}
+			<div class="popup-overlay" style="display: flex;">
+				<div class="popup-content">
+					<h2>Inscription réussie!</h2>
+					<p>{{ message }}</p>
+					<button onclick="this.closest('.popup-overlay').style.display='none'" class="btn btn-primary">Fermer</button>
+				</div>
+			</div>
+		{% endif %}
+
+		<form method="POST" action="{{ path('app_inscription') }}" data-turbo="false">
+			<div class="form-group">
+				<label for="nom">Nom :</label>
+				<input type="text" id="nom" name="nom" required>
+			</div>
+
+			<div class="form-group">
+				<label for="prenom">Prénom :</label>
+				<input type="text" id="prenom" name="prenom" required>
+			</div>
+
+			<div class="form-group">
+				<label for="email">Email :</label>
+				<input type="email" id="email" name="email" required>
+			</div>
+
+			<div class="form-group">
+				<label for="telephone">Téléphone :</label>
+				<input type="tel" id="telephone" name="telephone" required pattern="[0-9]{10}" placeholder="0601020304">
+			</div>
+			<div class="form-group">
+				<label for="competences">Compétences :</label>
+				<textarea type="text" id="competences" name="competences" required rows="3" placeholder="Entrez vos compétences séparées par une virgule..."></textarea>
+				
+			</div>
+			<div class="form-group">
+				<label for="role">Je suis :</label>
+				<select name="role" id="role" required onchange="toggleFormateurFields()">
+					<option value="etudiant">Étudiant</option>
+					<option value="formateur">Formateur</option>
+				</select>
+			</div>
+
+			<div id="formateurFields" style="display: none;">
+				<div class="form-group">
+					<label for="specialite">Spécialité :</label>
+					<input type="text" id="specialite" name="specialite" placeholder="Ex: Développement Web">
+				</div>
+
+				<div class="form-group">
+					<label for="bio">Bio :</label>
+					<textarea id="bio" name="bio" rows="3" placeholder="Présentez-vous en quelques lignes..."></textarea>
+				</div>
+
+				<div class="form-group">
+					<label for="experiences">Expériences :</label>
+					<textarea id="experiences" name="experiences" rows="3" placeholder="Vos expériences professionnelles..."></textarea>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="password">Mot de passe :</label>
+				<input type="password" id="password" name="password" required minlength="6">
+			</div>
+
+			<div class="form-group">
+				<label for="password_confirm">Confirmer le mot de passe :</label>
+				<input type="password" id="password_confirm" name="password_confirm" required>
+			</div>
+
+			<button type="submit" class="btn btn-primary btn-full">S'inscrire</button>
+		</form>
+
+		<p class="auth-link">Déjà inscrit ?
+			<a href="{{ path('app_connexion') }}">Connectez-vous</a>
+		</p>
+	</div>
+
+ <script>
+  function toggleFormateurFields() {
+      const role = document.getElementById('role').value;
+      const fields = document.getElementById('formateurFields');
+      fields.style.display = role === 'formateur' ? 'block' : 'none';
+  }
+  </script>
+{% endblock %}

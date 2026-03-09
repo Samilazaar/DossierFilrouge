@@ -1,0 +1,261 @@
+<mxfile host="app.diagrams.net" modified="2026-01-13T12:00:00.000Z" agent="Claude" version="21.0.0">
+  <diagram name="Inscription Formation" id="sequence-inscription">
+    <mxGraphModel dx="1434" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Acteurs et Participants -->
+        <mxCell id="user-head" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="user-body" value="" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="user-label" value="Utilisateur" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="20" y="95" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="user-line" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 1;strokeWidth=2;strokeColor=#d6b656;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="55" y="120" as="sourcePoint" />
+            <mxPoint x="55" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Navigateur -->
+        <mxCell id="browser" value="Navigateur" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="140" y="40" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="browser-line" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 1;strokeWidth=2;strokeColor=#6c8ebf;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="190" y="85" as="sourcePoint" />
+            <mxPoint x="190" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- DashboardController -->
+        <mxCell id="controller" value="Dashboard&#xa;Controller" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="320" y="40" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="controller-line" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 1;strokeWidth=2;strokeColor=#82b366;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="370" y="85" as="sourcePoint" />
+            <mxPoint x="370" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Repository -->
+        <mxCell id="repository" value="Doctrine&#xa;Repository" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="500" y="40" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="repository-line" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 1;strokeWidth=2;strokeColor=#9673a6;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="85" as="sourcePoint" />
+            <mxPoint x="550" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Database -->
+        <mxCell id="database" value="PostgreSQL" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="670" y="30" width="80" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="database-line" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 1;strokeWidth=2;strokeColor=#b85450;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="710" y="95" as="sourcePoint" />
+            <mxPoint x="710" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Messages -->
+        <!-- 1. Clique S'inscrire -->
+        <mxCell id="msg1" value="1. Clique &quot;S'inscrire&quot;" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="60" y="130" as="sourcePoint" />
+            <mxPoint x="185" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 2. POST Request -->
+        <mxCell id="msg2" value="2. POST /dashboard/atelier/{id}/inscrire" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="195" y="160" as="sourcePoint" />
+            <mxPoint x="365" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 3. checkUser -->
+        <mxCell id="msg3" value="3. checkUser(session)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#82b366;curved=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="375" y="190" as="sourcePoint" />
+            <mxPoint x="410" y="210" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="420" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 4. findUserById -->
+        <mxCell id="msg4" value="4. findUserById(id)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="375" y="240" as="sourcePoint" />
+            <mxPoint x="545" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 5. SELECT users -->
+        <mxCell id="msg5" value="5. SELECT * FROM users" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="555" y="270" as="sourcePoint" />
+            <mxPoint x="705" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 6. Return User -->
+        <mxCell id="msg6" value="User" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#999999;dashed=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="705" y="300" as="sourcePoint" />
+            <mxPoint x="375" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 7. findAtelierById -->
+        <mxCell id="msg7" value="6. findAtelierById(id)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="375" y="330" as="sourcePoint" />
+            <mxPoint x="545" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 8. SELECT ateliers -->
+        <mxCell id="msg8" value="7. SELECT * FROM ateliers" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="555" y="360" as="sourcePoint" />
+            <mxPoint x="705" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 9. Return Atelier -->
+        <mxCell id="msg9" value="Atelier" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#999999;dashed=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="705" y="390" as="sourcePoint" />
+            <mxPoint x="375" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 10. findInscription -->
+        <mxCell id="msg10" value="8. findInscription(user, atelier)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="375" y="420" as="sourcePoint" />
+            <mxPoint x="545" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 11. SELECT inscriptions -->
+        <mxCell id="msg11" value="9. SELECT * FROM inscriptions" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="555" y="450" as="sourcePoint" />
+            <mxPoint x="705" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 12. Return null -->
+        <mxCell id="msg12" value="null (pas inscrit)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#999999;dashed=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="705" y="480" as="sourcePoint" />
+            <mxPoint x="375" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 13. estComplet -->
+        <mxCell id="msg13" value="10. estComplet() → false" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#82b366;curved=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="375" y="510" as="sourcePoint" />
+            <mxPoint x="410" y="530" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="420" y="510" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 14. new Inscription -->
+        <mxCell id="msg14" value="11. new Inscription()" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#82b366;curved=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="375" y="550" as="sourcePoint" />
+            <mxPoint x="410" y="570" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="420" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 15. addInscription -->
+        <mxCell id="msg15" value="12. addInscription(inscription)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="375" y="600" as="sourcePoint" />
+            <mxPoint x="545" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 16. decrementerPlaces -->
+        <mxCell id="msg16" value="13. decrementerPlaces()" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#9673a6;curved=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="555" y="620" as="sourcePoint" />
+            <mxPoint x="590" y="640" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="600" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 17. INSERT + UPDATE -->
+        <mxCell id="msg17" value="14. INSERT + UPDATE" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="555" y="660" as="sourcePoint" />
+            <mxPoint x="705" y="660" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 18. OK -->
+        <mxCell id="msg18" value="OK" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#999999;dashed=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="705" y="690" as="sourcePoint" />
+            <mxPoint x="375" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 19. addFlash -->
+        <mxCell id="msg19" value="15. addFlash('success')" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#82b366;curved=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="375" y="710" as="sourcePoint" />
+            <mxPoint x="410" y="730" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="420" y="710" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 20. Redirect -->
+        <mxCell id="msg20" value="16. Redirect /dashboard/atelier/{id}" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#999999;dashed=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="365" y="750" as="sourcePoint" />
+            <mxPoint x="195" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 21. Affiche -->
+        <mxCell id="msg21" value="17. Affiche succès" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#999999;dashed=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="185" y="780" as="sourcePoint" />
+            <mxPoint x="60" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Title -->
+        <mxCell id="title" value="Diagramme de Séquence - S'inscrire à une Formation (SkillHub)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="200" y="5" width="400" height="20" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

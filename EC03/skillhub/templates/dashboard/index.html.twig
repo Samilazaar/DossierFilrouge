@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ page_title }}
+	- SkillHub
+{% endblock %}
+
+{% block body %}
+	<div class="dashboard-container">
+		<aside class="sidebar">
+			<h2>SkillHub</h2>
+			<p class="user-welcome">Bonjour,
+				{{ user.prenom }}
+				!</p>
+			<nav class="sidebar-nav">
+				<a href="{{ path('app_dashboard') }}" class="{% if active_view == 'ateliers' %}active{% endif %}">
+					📚 Catalogue d'ateliers
+				</a>
+				{% if user.isFormateur() %}
+					<a href="{{ path('app_dashboard_formateur') }}" class="{% if active_view == 'formateur' %}active{% endif %}">
+						🎓 Mes Ateliers
+					</a>
+				{% endif %}
+				<a href="{{ path('app_dashboard_inscriptions') }}" class="{% if active_view == 'inscriptions' %}active{% endif %}">
+					✅ Mes inscriptions
+				</a>
+				<a href="{{ path('app_dashboard_profil') }}" class="{% if active_view == 'profil' %}active{% endif %}">
+					👤 Mon Profil
+				</a>
+				<a href="{{ path('app_recommend_atelier') }}">
+					🤖 Recommandation IA
+				</a>
+				<a href="{{ path('app_deconnexion') }}">
+					🔐 Déconnexion
+				</a>
+			</nav>
+		</aside>
+
+		<main class="main-content">
+			<h1>{{ page_title }}</h1>
+
+			<div class="ateliers-grid">
+				{% for atelier in ateliers %}
+					<div class="atelier-card clickable" onclick="window.location.href='{{ path('app_atelier_detail', {'id': atelier.id}) }}'">
+						<div class="atelier-image">
+							<img src="{{ atelier.imageUrl }}" alt="{{ atelier.titre }}" loading="lazy">
+						</div>
+						<h3>{{ atelier.titre }}</h3>
+						<p class="atelier-description">{{ atelier.description|slice(0, 150) }}...</p>
+						<div class="atelier-info">
+							<p>👨‍🏫
+								{{ atelier.getFormateurNom() }}</p>
+							<p>📅
+								{{ atelier.date|date('d/m/Y H:i') }}</p>
+							<p>⏱️
+								{{ atelier.duree }}</p>
+							<p class="places-info">
+								👥
+								<span class="{{ atelier.estComplet ? 'places-full' : 'places-available' }}">
+									{{ atelier.placesRestantes }}/{{ atelier.capaciteMax }}
+								</span>
+							</p>
+						</div>
+						{% if atelier.id in inscrit_atelier_ids %}
+							<button class="btn-inscrire btn-inscrit" disabled>Déjà inscrit</button>
+						{% elseif atelier.estComplet %}
+							<button class="btn-inscrire btn-complet" disabled>Complet</button>
+						{% else %}
+							<form method="POST" action="{{ path('app_inscrire_atelier', {'id': atelier.id}) }}" onclick="event.stopPropagation()">
+								<button type="submit" class="btn-inscrire">S'inscrire</button>
+							</form>
+						{% endif %}
+					</div>
+				{% endfor %}
+			</div>
+		</main>
+	</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}SkillHub{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
+        {% endblock %}
+    </head>
+    <body>
+        {% include 'partials/_header.html.twig' %}
+        
+        <main>
+            {% block body %}{% endblock %}
+        </main>
+        
+        {% include 'partials/_footer.html.twig' %}
+
+        {% block javascripts %}
+        <script src="{{ asset('assets/js/main.js') }}"></script>
+        {% endblock %}
+    </body>
+</html>

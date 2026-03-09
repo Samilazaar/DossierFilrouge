@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+  {% block title %}Dashboard Formateur - SkillHub{% endblock %}
+
+  {% block body %}
+  <div class="dashboard-container">
+      <aside class="sidebar">
+          <h2>SkillHub</h2>
+          <p class="user-welcome">Bonjour, {{ user.prenom }} !</p>
+          <nav class="sidebar-nav">
+              <a href="{{ path('app_dashboard') }}">
+                  📚 Catalogue d'ateliers
+              </a>
+              <a href="{{ path('app_dashboard_formateur') }}" class="active">
+                  🎓 Mes Ateliers
+              </a>
+              <a href="{{ path('app_dashboard_inscriptions') }}">
+                  ✅ Mes inscriptions
+              </a>
+              <a href="{{ path('app_dashboard_profil') }}">
+                  👤 Mon Profil
+              </a>
+              <a href="{{ path('app_recommend_atelier') }}">
+                  🤖 Recommandation IA
+              </a>
+              <a href="{{ path('app_deconnexion') }}">
+                  🔐 Déconnexion
+              </a>
+          </nav>
+      </aside>
+
+      <main class="main-content">
+          <h1>Dashboard Formateur</h1>
+
+          <section class="profil-formateur">
+              <h2>Mon Profil</h2>
+              <p><strong>Spécialité :</strong> {{ formateur_profile.specialite ?? 'Non renseignée' }}</p>
+              <p><strong>Bio :</strong> {{ formateur_profile.bio ?? 'Non renseignée' }}</p>
+              <p><strong>Expériences :</strong> {{ formateur_profile.experiences ?? 'Non renseignées' }}</p>
+          </section>
+
+          <section class="mes-ateliers">
+              <div class="section-header">
+                  <h2>Mes Ateliers</h2>
+                  <a href="{{ path('app_creer_atelier') }}" class="btn btn-primary">+ Créer un atelier</a>
+              </div>
+
+              {% if mes_ateliers|length > 0 %}
+                  <div class="ateliers-grid">
+                      {% for atelier in mes_ateliers %}
+                          <div class="atelier-card clickable" onclick="window.location.href='{{ path('app_atelier_detail', {id: atelier.id}) }}'">
+                              <div class="atelier-image">
+                                  <img src="{{ atelier.imageUrl }}" alt="{{ atelier.titre }}" loading="lazy">
+                              </div>
+                              <h3>{{ atelier.titre }}</h3>
+                              <p class="atelier-description">{{ atelier.description|slice(0, 100) }}...</p>
+                              <div class="atelier-info">
+                                  <p>📅 {{ atelier.date|date('d/m/Y H:i') }}</p>
+                                  <p>⏱️ {{ atelier.duree }}</p>
+                                  <p class="places-info">
+                                      👥 <span class="{{ atelier.estComplet ? 'places-full' : 'places-available' }}">
+                                          {{ atelier.placesRestantes }}/{{ atelier.capaciteMax }}
+                                      </span>
+                                  </p>
+                              </div>
+                          </div>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  <div class="empty-state">
+                      <p>Vous n'avez pas encore d'ateliers.</p>
+                      <a href="{{ path('app_creer_atelier') }}" class="btn btn-primary">Créer mon premier atelier</a>
+                  </div>
+              {% endif %}
+          </section>
+      </main>
+  </div>
+  {% endblock %}

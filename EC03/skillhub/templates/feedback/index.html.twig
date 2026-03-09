@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Feedback - SkillHub{% endblock %}
+
+{% block body %}
+    <h1>Tous les avis</h1>
+    {% if feedbacks is not empty %}
+        {% for feedback in feedbacks %}
+            <div class="feedback-card">
+                <p><strong>Note :</strong> {{ feedback.note }}/5</p>
+                <p>{{ feedback.commentaire }}</p>
+                <p><small>{{ feedback.date|date('d/m/Y H:i') }}</small></p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Aucun avis pour le moment.</p>
+    {% endif %}
+{% endblock %}

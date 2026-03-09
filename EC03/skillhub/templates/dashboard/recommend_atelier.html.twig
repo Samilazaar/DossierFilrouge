@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ page_title }} - SkillHub
+{% endblock %}
+
+{% block body %}
+	<div class="dashboard-container">
+		<aside class="sidebar">
+			<h2>SkillHub</h2>
+			<p class="user-welcome">Bonjour,
+				{{ user.prenom }}
+				!</p>
+			<nav class="sidebar-nav">
+				<a href="{{ path('app_dashboard') }}">
+					📚 Catalogue d'ateliers
+				</a>
+				{% if user.isFormateur() %}
+					<a href="{{ path('app_dashboard_formateur') }}">
+						🎓 Mes Ateliers
+					</a>
+				{% endif %}
+				<a href="{{ path('app_dashboard_inscriptions') }}">
+					✅ Mes inscriptions
+				</a>
+				<a href="{{ path('app_dashboard_profil') }}">
+					👤 Mon Profil
+				</a>
+				<a href="{{ path('app_recommend_atelier') }}" class="active">
+					🤖 Recommandation IA
+				</a>
+				<a href="{{ path('app_deconnexion') }}">
+					🔐 Déconnexion
+				</a>
+			</nav>
+		</aside>
+
+		<main class="main-content">
+			<a href="{{ path('app_dashboard') }}" class="btn-back">← Retour au catalogue</a>
+
+			<h1>{{ page_title }}</h1>
+
+			{% if recommendation %}
+				<div class="ia-message">
+					<div class="ia-avatar">🤖</div>
+					<div class="ia-bubble">
+						<p>{{ recommendation.texte }}</p>
+					</div>
+				</div>
+
+				{% if recommendation.ids is defined and recommendation.ids is not empty %}
+					<h2 class="recommend-subtitle">Ateliers recommandés pour vous</h2>
+					<div class="ateliers-grid">
+						{% for atelier in ateliers %}
+							{% if atelier.id in recommendation.ids %}
+								<div class="atelier-card clickable" onclick="window.location.href='{{ path('app_atelier_detail', {'id': atelier.id}) }}'">
+									<div class="atelier-image">
+										<img src="{{ atelier.imageUrl }}" alt="{{ atelier.titre }}" loading="lazy">
+									</div>
+									<h3>{{ atelier.titre }}</h3>
+									<p class="atelier-description">{{ atelier.description|slice(0, 150) }}...</p>
+									<div class="atelier-info">
+										<p>👨‍🏫 {{ atelier.getFormateurNom() }}</p>
+										<p>📅 {{ atelier.date|date('d/m/Y H:i') }}</p>
+										<p>⏱️ {{ atelier.duree }}</p>
+										<p class="places-info">
+											👥
+											<span class="{{ atelier.estComplet ? 'places-full' : 'places-available' }}">
+												{{ atelier.placesRestantes }}/{{ atelier.capaciteMax }}
+											</span>
+										</p>
+									</div>
+								</div>
+							{% endif %}
+						{% endfor %}
+					</div>
+				{% endif %}
+			{% else %}
+				<div class="empty-state">
+					<p>Aucune recommandation disponible. Vérifiez que vos compétences souhaitées sont renseignées dans votre profil.</p>
+				</div>
+			{% endif %}
+
+			<a href="{{ path('app_dashboard') }}" class="btn btn-primary" style="margin-top: 2rem;">Voir tous les ateliers</a>
+		</main>
+	</div>
+{% endblock %}
