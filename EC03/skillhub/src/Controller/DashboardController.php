@@ -3,12 +3,10 @@
 namespace App\Controller;
 
 use App\Service\DoctrineDataRepository;
-use App\Document\Feedback;
 use App\Entity\User;
 use App\Entity\Atelier;
 use App\Entity\Inscription;
 use App\Entity\UserFormateur;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,11 +18,11 @@ use Doctrine\ORM\EntityManagerInterface;
 class DashboardController extends AbstractController
 {
     private DoctrineDataRepository $repository;
-    private DocumentManager $documentManager;
+    private ?object $documentManager;
     private IAService $iaService;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(DoctrineDataRepository $repository, DocumentManager $documentManager, IAService $iaService, EntityManagerInterface $entityManager)
+    public function __construct(DoctrineDataRepository $repository, IAService $iaService, EntityManagerInterface $entityManager, ?object $documentManager = null)
     {
         $this->repository = $repository;
         $this->documentManager = $documentManager;
@@ -116,7 +114,11 @@ class DashboardController extends AbstractController
         $inscription = $this->repository->findInscription($user, $atelier);
         $estInscrit = $inscription !== null;
 
-        $feedbacks = $this->documentManager->getRepository(Feedback::class)->findBy(['atelierId' => (string) $id]);
+        $feedbacks = [];
+        if ($this->documentManager) {
+            $feedbackClass = 'App\Document\Feedback';
+            $feedbacks = $this->documentManager->getRepository($feedbackClass)->findBy(['atelierId' => (string) $id]);
+        }
 
         return $this->render('dashboard/atelier_detail.html.twig', [
             'page_title' => $atelier->getTitre(),
