@@ -8,6 +8,14 @@
 	<div class="auth-container">
 		<h1>{{ page_title }}</h1>
 
+		{% if errors is defined and errors|length > 0 %}
+			<div class="error-message">
+				{% for error in errors %}
+					<p>{{ error }}</p>
+				{% endfor %}
+			</div>
+		{% endif %}
+
 		{% if success is defined and success %}
 			<div class="popup-overlay" style="display: flex;">
 				<div class="popup-content">
@@ -32,6 +40,11 @@
 			<div class="form-group">
 				<label for="email">Email :</label>
 				<input type="email" id="email" name="email" required>
+			</div>
+
+			<div class="form-group">
+				<label for="telephone">Téléphone :</label>
+				<input type="tel" id="telephone" name="telephone" required pattern="[0-9]{10}" placeholder="0601020304">
 			</div>
 
 			<div class="form-group">

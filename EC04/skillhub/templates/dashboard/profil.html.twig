@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ page_title }}
+	- SkillHub
+{% endblock %}
+
+{% block body %}
+	<div class="dashboard-container">
+		<aside class="sidebar">
+			<h2>SkillHub</h2>
+			<p class="user-welcome">Bonjour,
+				{{ user.prenom }}
+				!</p>
+			<nav class="sidebar-nav">
+				<a href="{{ path('app_dashboard') }}" class="{% if active_view == 'ateliers' %}active{% endif %}">
+					📚 Catalogue d'ateliers
+				</a>
+				{% if user.isFormateur() %}
+					<a href="{{ path('app_dashboard_formateur') }}" class="{% if active_view == 'formateur' %}active{% endif %}">
+						🎓 Mes Ateliers
+					</a>
+				{% endif %}
+				<a href="{{ path('app_dashboard_inscriptions') }}" class="{% if active_view == 'inscriptions' %}active{% endif %}">
+					✅ Mes inscriptions
+				</a>
+				<a href="{{ path('app_dashboard_profil') }}" class="{% if active_view == 'profil' %}active{% endif %}">
+					👤 Mon Profil
+				</a>
+				<a href="{{ path('app_recommend_atelier') }}">
+					🤖 Recommandation IA
+				</a>
+				<a href="{{ path('app_deconnexion') }}">
+					🔐 Déconnexion
+				</a>
+			</nav>
+		</aside>
+
+		<main class="main-content">
+			<h1>{{ page_title }}</h1>
+
+			<div class="profil-section">
+				<h2>Informations personnelles</h2>
+				<div class="profil-info">
+					<p><strong>Nom :</strong> {{ user.nom }}</p>
+					<p><strong>Prénom :</strong> {{ user.prenom }}</p>
+					<p><strong>Email :</strong> {{ user.email }}</p>
+					<p><strong>Téléphone :</strong> {{ user.telephone ?? 'Non renseigné' }}</p>
+				</div>
+			</div>
+
+			<div class="profil-section">
+				<h2>Compétences souhaitées</h2>
+				<p class="profil-description">Ces compétences sont utilisées par l'IA pour vous recommander des ateliers adaptés.</p>
+
+				<div class="competences-list">
+					{% for competence in user.competences ?? [] %}
+						<div class="competence-tag">
+							<span>{{ competence }}</span>
+							<form method="POST" action="{{ path('app_dashboard_profil') }}" class="inline-form">
+								<input type="hidden" name="remove" value="{{ competence }}">
+								<button type="submit" class="competence-remove" title="Supprimer">✕</button>
+							</form>
+						</div>
+					{% else %}
+						<p class="empty-competences">Aucune compétence renseignée pour le moment.</p>
+					{% endfor %}
+				</div>
+
+				<form method="POST" action="{{ path('app_dashboard_profil') }}" class="competence-form">
+					<div class="form-group">
+						<label for="competence">Ajouter une compétence</label>
+						<div class="competence-input-group">
+							<input type="text" id="competence" name="competence" placeholder="Ex: JavaScript, Python, UX Design..." required>
+							<button type="submit" class="btn btn-inscrire">Ajouter</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</main>
+	</div>
+{% endblock %}

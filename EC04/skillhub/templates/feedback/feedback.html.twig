@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Feedback - SkillHub{% endblock %}
+
+{% block body %}
+    <h1>Feedback</h1>
+    <form action="{{ path('create_feedback') }}" method="POST">
+        <label for="note">Note</label>
+        <input type="number" name="note" id="note" required>
+        <label for="commentaire">Commentaire</label>
+        <textarea name="commentaire" id="commentaire" required></textarea>
+        <button type="submit">Envoyer</button>
+    </form>
+     {% for feedback in feedbacks %}
+      <h3>{{ feedback.note }}</h3>
+      <p>{{ feedback.commentaire }}</p>
+      <p>{{ feedback.date|date('d/m/Y H:i') }}</p>
+      <p>{{ feedback.atelierId }}</p>
+      <p>{{ feedback.userId }}</p>
+      
+    {% endfor %}
+{% endblock %}

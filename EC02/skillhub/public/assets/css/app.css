@@ -346,6 +346,12 @@ body {
     font-size: 1.5rem;
 }
 
+.user-welcome {
+    color: #ecf0f1;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
 .sidebar-nav {
     display: flex;
     flex-direction: column;
@@ -379,9 +385,14 @@ body {
 .atelier-card {
     background: white;
     border-radius: 10px;
-    padding: 1.5rem;
+    padding: 0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.atelier-card.clickable {
+    cursor: pointer;
 }
 
 .atelier-card:hover {
@@ -389,14 +400,59 @@ body {
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
+.atelier-image {
+    width: 100%;
+    height: 180px;
+    margin-bottom: 0;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+.atelier-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.atelier-card:hover .atelier-image img {
+    transform: scale(1.05);
+}
+
 .atelier-card h3 {
-    margin-top: 0;
+    margin-top: 1.5rem;
     color: #2c3e50;
+    padding: 0 1rem;
+}
+
+.atelier-description {
+    color: #7f8c8d;
+    padding: 0 1rem 1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
 .atelier-info {
-    margin: 1rem 0;
+    margin: 0.5rem 0;
     color: #7f8c8d;
+    padding: 0 1rem;
+}
+
+.atelier-info p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+.places-info {
+    font-weight: bold;
+}
+
+.places-available {
+    color: #28a745;
+}
+
+.places-full {
+    color: #dc3545;
 }
 
 .btn-inscrire {
@@ -416,6 +472,45 @@ body {
 .btn-inscrire:disabled {
     background-color: #95a5a6;
     cursor: not-allowed;
+}
+
+.btn-inscrire.btn-inscrit {
+    background-color: #28a745;
+}
+
+.btn-inscrire.btn-complet {
+    background-color: #dc3545;
+}
+
+.btn-small {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+.inline-form {
+    display: inline;
+}
+
+.inline-form form {
+    display: inline;
+}
+
+.inline-form button {
+    display: inline;
 }
 
 /* Table */
@@ -452,6 +547,134 @@ th {
 .statut-confirmé {
     background-color: #d4edda;
     color: #155724;
+}
+
+/* Atelier Detail */
+.btn-back {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 2rem;
+    transition: background-color 0.3s;
+}
+
+.btn-back:hover {
+    background-color: #5a6268;
+}
+
+.atelier-detail {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.atelier-detail-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.atelier-detail-image {
+    width: 100%;
+    height: 300px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+.atelier-detail-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.atelier-detail-content h1 {
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+.atelier-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.meta-item {
+    background-color: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    color: #495057;
+}
+
+.places-badge {
+    font-weight: bold;
+}
+
+.atelier-description {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+
+.atelier-description h2 {
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+.atelier-description p {
+    color: #495057;
+    line-height: 1.8;
+}
+
+.atelier-actions {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+.inscription-status {
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+.inscription-status.inscrit {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.inscription-status.complet {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.inscription-status.disponible {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.inscription-status h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 10px;
+}
+
+.empty-state p {
+    color: #7f8c8d;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
 }
 
 /* Auth */

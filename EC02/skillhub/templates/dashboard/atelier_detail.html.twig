@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ page_title }} - SkillHub
+{% endblock %}
+
+{% block body %}
+	<div class="dashboard-container">
+		<aside class="sidebar">
+			<h2>SkillHub</h2>
+			<p class="user-welcome">Bonjour, {{ user.prenom }} !</p>
+			<nav class="sidebar-nav">
+				<a href="{{ path('app_dashboard') }}">
+					📚 Catalogue d'ateliers
+				</a>
+				<a href="{{ path('app_dashboard_inscriptions') }}">
+					✅ Mes inscriptions
+				</a>
+				<a href="{{ path('app_deconnexion') }}">
+					🔐 Déconnexion
+				</a>
+			</nav>
+		</aside>
+
+		<main class="main-content">
+			<a href="{{ path('app_dashboard') }}" class="btn-back">← Retour au catalogue</a>
+
+			<div class="atelier-detail">
+				<div class="atelier-detail-header">
+					<div class="atelier-detail-image">
+						<img src="{{ atelier.imageUrl }}" alt="{{ atelier.titre }}">
+					</div>
+					<div class="atelier-detail-content">
+						<h1>{{ atelier.titre }}</h1>
+						<div class="atelier-meta">
+							<span class="meta-item">👨‍🏫 {{ atelier.formateur }}</span>
+							<span class="meta-item">📅 {{ atelier.date }}</span>
+							<span class="meta-item">⏱️ {{ atelier.duree }}</span>
+							<span class="meta-item places-badge {{ atelier.estComplet ? 'places-full' : 'places-available' }}">
+								👥 {{ atelier.placesRestantes }}/{{ atelier.capaciteMax }} places
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="atelier-description">
+					<h2>Description</h2>
+					<p>{{ atelier.description }}</p>
+				</div>
+
+				<div class="atelier-actions">
+					{% if estInscrit %}
+						<div class="inscription-status inscrit">
+							<h3>✅ Vous êtes inscrit à cet atelier</h3>
+							<p>Date d'inscription : {{ inscription ? inscription.dateInscription|date('d/m/Y H:i') : '' }}</p>
+							<form method="POST" action="{{ path('app_desinscrire_atelier', {'id': atelier.id}) }}">
+								<button type="submit" class="btn btn-danger">Se désinscrire</button>
+							</form>
+						</div>
+					{% elseif atelier.estComplet %}
+						<div class="inscription-status complet">
+							<h3>❌ Atelier complet</h3>
+							<p>Désolé, il n'y a plus de places disponibles pour cet atelier.</p>
+						</div>
+					{% else %}
+						<div class="inscription-status disponible">
+							<h3>🎓 Inscrivez-vous maintenant !</h3>
+							<p>{{ atelier.placesRestantes }} place(s) encore disponible(s)</p>
+							<form method="POST" action="{{ path('app_inscrire_atelier', {'id': atelier.id}) }}">
+								<button type="submit" class="btn btn-primary btn-large">S'inscrire à cet atelier</button>
+							</form>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		</main>
+	</div>
+{% endblock %}

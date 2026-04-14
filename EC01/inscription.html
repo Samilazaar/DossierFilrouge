@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Page d'inscription de SkillHub. Créez votre compte pour accéder aux formations et cours en ligne." />
+    <meta name="author" content="SkillHub" />
+    <meta property="og:title" content="Inscription - SkillHub" />
+    <meta property="og:description" content="Créez votre compte SkillHub et commencez votre apprentissage." />
+    <meta property="og:type" content="website" />
+    <title>Inscription - SkillHub</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  
+  <body>
+    <!-- Skip Link - Accessibilité -->
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+    
+    <!-- Header -->
+    <header role="banner">
+      <nav aria-label="Navigation principale">
+        <ul>
+          <li><a href="index.html" aria-label="Retour à l'accueil">Accueil</a></li>
+          <li><a href="connexion.html" aria-label="Aller à la page de connexion">Connexion</a></li>
+        </ul>
+      </nav>
+    </header>
+    
+    <!-- Main Content -->
+    <main id="main-content" role="main">
+      <section 
+        class="auth-section"
+        aria-labelledby="inscription-title"
+      >
+        <h1 id="inscription-title">Inscription</h1>
+        
+        <form 
+          id="inscription-form" 
+          novalidate
+          aria-label="Formulaire d'inscription"
+        >
+          <div class="form-group">
+            <label for="nom">Nom :</label>
+            <input 
+              type="text" 
+              id="nom" 
+              name="nom" 
+              required 
+              placeholder="Votre nom"
+              aria-describedby="nom-hint"
+            />
+            <span id="nom-hint" class="field-hint">Entrez votre nom complet</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email :</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              required 
+              placeholder="votre@email.com"
+              aria-describedby="email-hint"
+            />
+            <span id="email-hint" class="field-hint">Entrez votre adresse email</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="motdepasse">Mot de passe :</label>
+            <input 
+              type="password" 
+              id="motdepasse" 
+              name="motdepasse" 
+              required 
+              placeholder="Mot de passe"
+              aria-describedby="motdepasse-hint"
+            />
+            <span id="motdepasse-hint" class="field-hint">Choisissez un mot de passe sécurisé</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="confirmation">Confirmer le mot de passe :</label>
+            <input 
+              type="password" 
+              id="confirmation" 
+              name="confirmation" 
+              required 
+              placeholder="Confirmer le mot de passe"
+              aria-describedby="confirmation-hint"
+            />
+            <span id="confirmation-hint" class="field-hint">Confirmez votre mot de passe</span>
+          </div>
+          
+          <button type="submit">S'inscrire</button>
+        </form>
+        
+        <p class="auth-link">
+          Déjà un compte ? 
+          <a href="connexion.html" aria-label="Se connecter à votre compte">Se connecter</a>
+        </p>
+      </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer role="contentinfo">
+      <p>Copyright 2025 SkillHub - Tous droits réservés</p>
+    </footer>
+    
+    <!-- Modal Popup -->
+    <div 
+      class="modal" 
+      id="success-modal" 
+      role="dialog" 
+      aria-modal="true" 
+      aria-labelledby="modal-title"
+    >
+      <div class="modal-content">
+        <div class="modal-icon" aria-hidden="true">✅</div>
+        <h2 id="modal-title" class="modal-message">
+          ✅ Inscription réussie ! Vous pouvez maintenant vous connecter
+        </h2>
+        <button 
+          class="modal-close" 
+          aria-label="Fermer la fenêtre de succès"
+        >
+          Fermer
+        </button>
+      </div>
+    </div>
+    
+    <script src="js/main.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const inscriptionForm = document.getElementById('inscription-form');
+        const modal = document.getElementById('success-modal');
+        const closeBtn = document.querySelector('.modal-close');
+        
+        // Gestion soumission formulaire
+        if (inscriptionForm) {
+          inscriptionForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nom = document.getElementById('nom').value;
+            const email = document.getElementById('email').value;
+            const motdepasse = document.getElementById('motdepasse').value;
+            const confirmation = document.getElementById('confirmation').value;
+            
+            // Validation des champs
+            if (!nom || !email || !motdepasse || !confirmation) {
+              alert('Veuillez remplir tous les champs');
+              return;
+            }
+            
+            // Validation correspondance mots de passe
+            if (motdepasse !== confirmation) {
+              alert('❌ Les mots de passe ne correspondent pas');
+              document.getElementById('motdepasse').focus();
+              return;
+            }
+            
+            // Afficher modal succès
+            modal.classList.add('active');
+            modal.querySelector('button').focus();
+          });
+        }
+        
+        // Fonction fermer modal
+        function hideModal() {
+          modal.classList.remove('active');
+          document.getElementById('nom').focus();
+        }
+        
+        // Fermer modal au clic sur bouton
+        if (closeBtn) {
+          closeBtn.addEventListener('click', hideModal);
+        }
+        
+        // Fermer modal au clic en dehors
+        if (modal) {
+          modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+              hideModal();
+            }
+          });
+        }
+        
+        // Fermer modal avec touche Escape
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            hideModal();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

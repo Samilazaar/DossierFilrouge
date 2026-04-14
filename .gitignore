@@ -36,3 +36,31 @@ Temporary Items
 *.tmp
 *.temp
 
+# Dépendances
+**/vendor/
+**/node_modules/
+
+# Environnement (garder .env et .env.example, ignorer locaux)
+**/.env.local
+**/.env.*.local
+**/.env.dev
+**/.env.prod
+
+# Symfony
+**/var/
+**/public/bundles/
+**/.phpunit.result.cache
+
+# Build / cache outils
+**/.scannerwork/
+**/.sonar/
+**/tmp/
+
+# Archives / binaires lourds
+*.tar.gz
+*.zip
+
+# Captures d'écran (locales)
+Capture d'écran/
+Captures d'écran/
+

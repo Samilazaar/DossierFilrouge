@@ -1,0 +1,114 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "SkillHub API",
+        "description": "API REST pour SkillHub",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/workshops": {
+            "get": {
+                "summary": "Liste les ateliers",
+                "description": "Retourne la liste pagin\u00e9e des ateliers avec filtres optionnels",
+                "operationId": "get_get_all_workshops",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Num\u00e9ro de page",
+                        "required": false
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Nombre de r\u00e9sultats par page (max 50)",
+                        "required": false
+                    },
+                    {
+                        "name": "teacher",
+                        "in": "query",
+                        "description": "ID du formateur",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des ateliers avec m\u00e9tadonn\u00e9es de pagination"
+                    },
+                    "400": {
+                        "description": "Param\u00e8tre invalide (limit > 50)"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Cr\u00e9er un atelier",
+                "description": "Cr\u00e9e un nouvel atelier",
+                "operationId": "post_create_workshop",
+                "requestBody": {
+                    "description": "Donn\u00e9es de l'atelier \u00e0 cr\u00e9er",
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Atelier cr\u00e9\u00e9 avec succ\u00e8s"
+                    },
+                    "422": {
+                        "description": "Donn\u00e9es invalides"
+                    }
+                }
+            }
+        },
+        "/api/workshops/{id}": {
+            "delete": {
+                "summary": "Supprimer un atelier",
+                "description": "Supprime un atelier par son ID",
+                "operationId": "delete_delete_workshop",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'atelier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Atelier supprim\u00e9"
+                    },
+                    "404": {
+                        "description": "Atelier non trouv\u00e9"
+                    }
+                }
+            }
+        },
+        "/api/students/{studentId}/workshops": {
+            "get": {
+                "summary": "Ateliers d'un \u00e9tudiant",
+                "description": "Retourne les ateliers auxquels un \u00e9tudiant est inscrit",
+                "operationId": "get_get_student_workshops",
+                "parameters": [
+                    {
+                        "name": "studentId",
+                        "in": "path",
+                        "description": "ID de l'\u00e9tudiant",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des ateliers de l'\u00e9tudiant"
+                    },
+                    "404": {
+                        "description": "\u00c9tudiant non trouv\u00e9"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+  {% block title %}{{ page_title }} - SkillHub{% endblock %}
+
+  {% block body %}
+  <div class="dashboard-container">
+      <aside class="sidebar">
+          <h2>SkillHub</h2>
+          <p class="user-welcome">Bonjour, {{ user.prenom }} !</p>
+          <nav class="sidebar-nav">
+              <a href="{{ path('app_dashboard') }}">
+                  📚 Catalogue d'ateliers
+              </a>
+              <a href="{{ path('app_dashboard_formateur') }}">
+                  🎓 Mes Ateliers
+              </a>
+              <a href="{{ path('app_dashboard_inscriptions') }}">
+                  ✅ Mes inscriptions
+              </a>
+              <a href="{{ path('app_dashboard_profil') }}">
+                  👤 Mon Profil
+              </a>
+              <a href="{{ path('app_recommend_atelier') }}">
+                  🤖 Recommandation IA
+              </a>
+              <a href="{{ path('app_deconnexion') }}">
+                  🔐 Déconnexion
+              </a>
+          </nav>
+      </aside>
+
+      <main class="main-content">
+          <a href="{{ path('app_dashboard_formateur') }}" class="btn-back">← Retour à mes ateliers</a>
+
+          <h1>{{ page_title }}</h1>
+
+          {% if errors is defined and errors|length > 0 %}
+              <div class="error-message">
+                  {% for error in errors %}
+                      <p>{{ error }}</p>
+                  {% endfor %}
+              </div>
+          {% endif %}
+
+          <form method="POST" action="{{ path('app_creer_atelier') }}" class="form-atelier">
+              <div class="form-group">
+                  <label for="titre">Titre de l'atelier :</label>
+                  <input type="text" id="titre" name="titre" required>
+              </div>
+
+              <div class="form-group">
+                  <label for="description">Description :</label>
+                  <textarea id="description" name="description" rows="5" required></textarea>
+              </div>
+
+              <div class="form-group">
+                  <label for="date">Date et heure :</label>
+                  <input type="datetime-local" id="date" name="date" required>
+              </div>
+
+              <div class="form-group">
+                  <label for="duree">Durée :</label>
+                  <input type="text" id="duree" name="duree" placeholder="Ex: 2h30" required>
+              </div>
+
+              <div class="form-group">
+                  <label for="capacite_max">Capacité maximale :</label>
+                  <input type="number" id="capacite_max" name="capacite_max" min="1" required>
+              </div>
+
+              <div class="form-group">
+                  <label for="image_url">URL de l'image (optionnel) :</label>
+                  <input type="url" id="image_url" name="image_url" placeholder="https://...">
+              </div>
+
+              <button type="submit" class="btn btn-primary">Créer l'atelier</button>
+          </form>
+      </main>
+  </div>
+  {% endblock %}
