@@ -44,7 +44,7 @@ namespace App\Controller;
                   $errors[] = 'Cet email est déjà utilisé.';
               }
 
-              if (strlen($password) < 12) {
+              if (strlen($password) < 6) {
                   $errors[] = 'Le mot de passe doit contenir au moins 6 caractères.';
               }
 
