@@ -19,7 +19,7 @@ namespace App\Controller;
           $this->repository = $repository;
       }
 
-      #[Route('/inscription', name: 'app_inscription')]
+      #[Route('/inscription', name: 'app_inscription')]-
       public function index(Request $request): Response
       {
           if ($request->isMethod('POST')) {
@@ -32,7 +32,7 @@ namespace App\Controller;
               $role = $request->request->get('role', 'etudiant');;
               $bio = $request->request->get('bio');
               $specialite = $request->request->get('specialite');
-              $experiences = $request->request->get('experiences');....
+              $experiences = $request->request->get('experiences');
 
               $errors = [];
 
