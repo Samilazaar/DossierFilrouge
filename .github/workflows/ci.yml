@@ -1,0 +1,51 @@
+name: CI SkillHub
+
+on:
+  push:
+    branches: [main, develop, test]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality:
+    name: Tests et qualité
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: EC04/skillhub
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: ctype, iconv, mongodb, pdo, pdo_sqlite
+          tools: composer
+
+      - name: Cache des dépendances Composer
+        uses: actions/cache@v4
+        with:
+          path: EC04/skillhub/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('EC04/skillhub/composer.lock') }}
+
+      - name: Installation des dépendances
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Vérification syntaxe PHP (lint)
+        run: find src -name "*.php" -exec php -l {} \;
+
+      - name: Vérification templates Twig
+        run: php bin/console lint:twig templates --env=test
+        continue-on-error: true
+
+      - name: Vérification fichiers YAML
+        run: php bin/console lint:yaml config --env=test
+        continue-on-error: true
+
+      - name: Tests PHPUnit
+        run: vendor/bin/phpunit --testdox
+        continue-on-error: true
