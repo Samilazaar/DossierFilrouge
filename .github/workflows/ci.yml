@@ -51,12 +51,41 @@ jobs:
         continue-on-error: true
 
   # =====================================================================
-  # CD — Déploiement sur le VPS, UNIQUEMENT si le job "quality" est vert
-  # et seulement sur la branche test (pas sur les autres branches / PR).
+  # BUILD — Construit l'image à partir du code, puis la pousse sur ghcr.
+  # Ne tourne que si les tests passent, et seulement sur la branche test.
+  # =====================================================================
+  build-push:
+    name: Build & push image
+    needs: quality                              # attend que les tests passent
+    if: github.ref == 'refs/heads/test'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write                           # autorise le push sur ghcr
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Connexion à ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push de l'image
+        uses: docker/build-push-action@v6
+        with:
+          context: EC04/skillhub          # dossier du projet (avec le Dockerfile)
+          push: true
+          tags: ghcr.io/samilazaar/skillhub-app:latest
+
+  # =====================================================================
+  # CD — Déploiement sur le VPS, UNIQUEMENT si l'image a été construite/poussée.
   # =====================================================================
   deploy:
     name: Déploiement VPS
-    needs: quality                              # attend que les tests passent
+    needs: build-push                           # attend la nouvelle image
     if: github.ref == 'refs/heads/test'         # déploie seulement sur push "test"
     runs-on: ubuntu-latest
     steps:
