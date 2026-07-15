@@ -49,3 +49,25 @@ jobs:
       - name: Tests PHPUnit
         run: vendor/bin/phpunit --testdox
         continue-on-error: true
+
+  # =====================================================================
+  # CD — Déploiement sur le VPS, UNIQUEMENT si le job "quality" est vert
+  # et seulement sur la branche test (pas sur les autres branches / PR).
+  # =====================================================================
+  deploy:
+    name: Déploiement VPS
+    needs: quality                              # attend que les tests passent
+    if: github.ref == 'refs/heads/test'         # déploie seulement sur push "test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Relancer l'app sur le VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/skillhub
+            docker compose pull        # récupère les dernières images
+            docker compose up -d        # relance l'app proprement
+            docker compose ps           # affiche l'état dans les logs Actions
