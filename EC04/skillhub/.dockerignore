@@ -1,0 +1,15 @@
+# On n'envoie pas ces éléments dans l'image (build plus léger / propre)
+.git
+.gitignore
+vendor/
+var/
+tmp/
+tools/
+tests/
+.phpunit.cache/
+.scannerwork/
+.env.local
+.env.*.local
+*.tar
+dump.sql
+.DS_Store
