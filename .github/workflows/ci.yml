@@ -6,10 +6,20 @@ on:
   pull_request:
     branches: [main, develop]
 
+# Annule un run précédent encore en cours sur la même branche (économie de runner)
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Permissions minimales par défaut (principe du moindre privilège)
+permissions:
+  contents: read
+
 jobs:
   quality:
     name: Tests et qualité
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     defaults:
       run:
@@ -51,14 +61,42 @@ jobs:
         continue-on-error: true
 
   # =====================================================================
-  # BUILD — Construit l'image à partir du code, puis la pousse sur ghcr.
-  # Ne tourne que si les tests passent, et seulement sur la branche test.
+  # SECURITY — DevSecOps : détection de secrets + vulnérabilités du code.
+  # =====================================================================
+  security:
+    name: Sécurité (gitleaks + Trivy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0            # historique complet pour scanner tous les commits
+
+      - name: Scan de secrets (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Scan des vulnérabilités du code (Trivy fs)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: EC04/skillhub
+          severity: HIGH,CRITICAL
+          exit-code: '0'            # rapport seulement ici (bloquant sur l'image en étape 2)
+          format: table
+
+  # =====================================================================
+  # BUILD — Construit l'image, puis la pousse sur ghcr.
+  # Ne tourne que si tests ET sécurité sont verts, et seulement sur "test".
   # =====================================================================
   build-push:
     name: Build & push image
-    needs: quality                              # attend que les tests passent
+    needs: [quality, security]                  # attend tests + sécurité
     if: github.ref == 'refs/heads/test'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
       packages: write                           # autorise le push sur ghcr
@@ -88,6 +126,7 @@ jobs:
     needs: build-push                           # attend la nouvelle image
     if: github.ref == 'refs/heads/test'         # déploie seulement sur push "test"
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Relancer l'app sur le VPS
         uses: appleboy/ssh-action@v1.2.0

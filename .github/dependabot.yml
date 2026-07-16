@@ -1,0 +1,19 @@
+# .github/dependabot.yml
+# Dependabot surveille les dépendances et ouvre des PR quand une mise à jour
+# (notamment de sécurité) est disponible.
+version: 2
+updates:
+  # Dépendances PHP du projet (composer)
+  - package-ecosystem: "composer"
+    directory: "/EC04/skillhub"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "php"]
+
+  # Versions des actions utilisées dans les workflows GitHub
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels: ["dependencies", "ci"]
