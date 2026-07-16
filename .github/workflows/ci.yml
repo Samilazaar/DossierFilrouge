@@ -74,12 +74,12 @@ jobs:
           fetch-depth: 0            # historique complet pour scanner tous les commits
 
       - name: Scan de secrets (gitleaks)
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Scan des vulnérabilités du code (Trivy fs)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.30.0
         with:
           scan-type: fs
           scan-ref: EC04/skillhub
