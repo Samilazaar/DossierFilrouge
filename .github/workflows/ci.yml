@@ -78,14 +78,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Installation de Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sh -s -- -b /usr/local/bin v0.56.2
+
       - name: Scan des vulnérabilités du code (Trivy fs)
-        uses: aquasecurity/trivy-action@v0.30.0
-        with:
-          scan-type: fs
-          scan-ref: EC04/skillhub
-          severity: HIGH,CRITICAL
-          exit-code: '0'            # rapport seulement ici (bloquant sur l'image en étape 2)
-          format: table
+        run: |
+          trivy fs --severity HIGH,CRITICAL --exit-code 0 --no-progress EC04/skillhub
 
   # =====================================================================
   # BUILD — Construit l'image, puis la pousse sur ghcr.
