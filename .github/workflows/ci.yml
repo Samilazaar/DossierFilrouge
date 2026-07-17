@@ -107,12 +107,35 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & push de l'image
+      - name: Build de l'image (local, sans push)
         uses: docker/build-push-action@v6
         with:
           context: EC04/skillhub          # dossier du projet (avec le Dockerfile)
-          push: true
+          load: true                       # charge l'image localement pour la tester
           tags: ghcr.io/samilazaar/skillhub-app:latest
+
+      - name: Smoke test — l'image démarre et répond ?
+        run: |
+          docker run -d --name smoke -p 8080:80 ghcr.io/samilazaar/skillhub-app:latest
+          code=000
+          for i in $(seq 1 15); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080 || echo 000)
+            if [ "$code" != "000" ]; then echo "✅ L'image répond (HTTP $code)"; break; fi
+            echo "  tentative $i/15..."; sleep 3
+          done
+          docker logs smoke | tail -20
+          docker rm -f smoke
+          [ "$code" != "000" ] || { echo "❌ L'image ne répond pas"; exit 1; }
+
+      - name: Scan Trivy de l'image (bloquant HIGH/CRITICAL corrigeables)
+        run: |
+          docker save ghcr.io/samilazaar/skillhub-app:latest -o /tmp/image.tar
+          docker run --rm -v /tmp:/tmp aquasec/trivy:latest image \
+            --input /tmp/image.tar --severity HIGH,CRITICAL --ignore-unfixed \
+            --exit-code 1 --no-progress
+
+      - name: Push de l'image sur ghcr
+        run: docker push ghcr.io/samilazaar/skillhub-app:latest
 
   # =====================================================================
   # CD — Déploiement sur le VPS, UNIQUEMENT si l'image a été construite/poussée.

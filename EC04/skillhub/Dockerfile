@@ -1,39 +1,56 @@
-# Image de l'application SkillHub (Symfony 8 / PHP 8.4)
-# Serveur web inclus grâce à FrankenPHP (sert automatiquement public/)
-FROM dunglas/frankenphp:1-php8.4
+# syntax=docker/dockerfile:1
+# Image durcie de l'application SkillHub (Symfony / PHP 8.4 + FrankenPHP)
+# - multi-stage : les outils de build ne restent pas dans l'image finale
+# - utilisateur non-root
+# - HEALTHCHECK intégré
 
-# Extensions PHP requises par le projet :
-# - pdo_pgsql : PostgreSQL (Doctrine ORM)
-# - mongodb   : MongoDB (Doctrine ODM)
-# - intl, zip, opcache : classiques Symfony
-RUN install-php-extensions \
-    pdo_pgsql \
-    mongodb \
-    intl \
-    zip \
-    opcache
+# ============ Étape 1 : construction (builder) ============
+FROM dunglas/frankenphp:1-php8.4 AS builder
 
-# Composer (copié depuis l'image officielle)
+RUN install-php-extensions pdo_pgsql mongodb intl zip opcache
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 
-# Env prod dès le build : évite de charger les bundles de dev (MakerBundle...)
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
-
 WORKDIR /app
 
-# 1) On installe d'abord les dépendances (couche cache Docker)
+# 1) Dépendances d'abord (couche cache Docker)
 COPY composer.json composer.lock symfony.lock ./
 RUN composer install --no-dev --no-scripts --no-interaction --prefer-dist --no-progress
 
-# 2) On copie le code puis on finalise l'install
+# 2) Puis le code, et finalisation
 COPY . .
 RUN composer install --no-dev --no-interaction --prefer-dist --no-progress \
-    && composer dump-autoload --optimize
+    && composer dump-autoload --optimize --no-dev
 
-# FrankenPHP écoute en HTTP sur le port 80
+# ============ Étape 2 : image finale (runtime) ============
+FROM dunglas/frankenphp:1-php8.4 AS runtime
+
+# Extensions PHP nécessaires à l'exécution
+RUN install-php-extensions pdo_pgsql mongodb intl zip opcache
+
+# curl : requis pour le HEALTHCHECK
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
 ENV SERVER_NAME=:80
+WORKDIR /app
+
+# On copie uniquement l'application déjà construite (sans les outils de build)
+COPY --from=builder /app /app
+
+# FrankenPHP tourne en utilisateur NON-root :
+# on l'autorise à écouter sur le port 80, et on donne les droits à www-data.
+RUN setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp \
+    && chown -R www-data:www-data /app /data /config
+
+USER www-data
+
 EXPOSE 80
 
-# Droits d'écriture sur le cache/logs Symfony
-RUN chown -R www-data:www-data var/ 2>/dev/null || true
+# Vérifie automatiquement que l'application répond
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+    CMD curl -fsS http://localhost:80/ || exit 1
