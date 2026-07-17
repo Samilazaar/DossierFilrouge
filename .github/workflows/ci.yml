@@ -91,7 +91,7 @@ jobs:
     name: Build & push image (self-hosted VPS)
     needs: [quality, security]                  # attend tests + sécurité
     if: github.ref == 'refs/heads/test'
-    runs-on: [self-hosted, skillhub]            # tourne sur le runner installé sur le VPS
+    runs-on: ubuntu-latest                      # (runner self-hosted VPS installé ; build gardé sur GitHub-hosted pour la fiabilité)
     timeout-minutes: 25
     permissions:
       contents: read
