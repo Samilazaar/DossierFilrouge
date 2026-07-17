@@ -88,11 +88,11 @@ jobs:
   # Ne tourne que si tests ET sécurité sont verts, et seulement sur "test".
   # =====================================================================
   build-push:
-    name: Build & push image
+    name: Build & push image (self-hosted VPS)
     needs: [quality, security]                  # attend tests + sécurité
     if: github.ref == 'refs/heads/test'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+    runs-on: [self-hosted, skillhub]            # tourne sur le runner installé sur le VPS
+    timeout-minutes: 25
     permissions:
       contents: read
       packages: write                           # autorise le push sur ghcr
@@ -101,38 +101,30 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Connexion à ghcr.io
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build de l'image (local, sans push)
-        uses: docker/build-push-action@v6
-        with:
-          context: EC04/skillhub          # dossier du projet (avec le Dockerfile)
-          load: true                       # charge l'image localement pour la tester
-          tags: ghcr.io/samilazaar/skillhub-app:latest
+      - name: Build de l'image
+        run: docker build -t ghcr.io/samilazaar/skillhub-app:latest EC04/skillhub
 
       - name: Smoke test — l'image démarre et répond ?
         run: |
-          docker run -d --name smoke -p 8080:80 ghcr.io/samilazaar/skillhub-app:latest
+          docker rm -f smoke 2>/dev/null || true
+          docker run -d --name smoke ghcr.io/samilazaar/skillhub-app:latest
           code=000
           for i in $(seq 1 15); do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080 || echo 000)
+            code=$(docker exec smoke curl -s -o /dev/null -w '%{http_code}' http://localhost:80 2>/dev/null || echo 000)
             if [ "$code" != "000" ]; then echo "✅ L'image répond (HTTP $code)"; break; fi
-            echo "  tentative $i/15..."; sleep 3
+            echo "  tentative $i/15 (code=$code)"; sleep 3
           done
-          docker logs smoke | tail -20
-          docker rm -f smoke
+          docker logs smoke | tail -20 || true
+          docker rm -f smoke || true
           [ "$code" != "000" ] || { echo "❌ L'image ne répond pas"; exit 1; }
 
       - name: Scan Trivy de l'image (rapport HIGH/CRITICAL)
         run: |
-          docker save ghcr.io/samilazaar/skillhub-app:latest -o /tmp/image.tar
-          docker run --rm -v /tmp:/tmp aquasec/trivy:latest image \
-            --input /tmp/image.tar --severity HIGH,CRITICAL --ignore-unfixed \
-            --exit-code 0 --no-progress
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image \
+            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 0 --no-progress \
+            ghcr.io/samilazaar/skillhub-app:latest
           # exit-code 0 = rapport seulement. Passer à 1 pour rendre le scan bloquant.
 
       - name: Push de l'image sur ghcr
