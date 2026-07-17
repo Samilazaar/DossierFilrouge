@@ -1,0 +1,21 @@
+# Runner GitHub Actions auto-hébergé (self-hosted) pour SkillHub.
+# À lancer SUR LE VPS :  docker compose up -d
+# Il s'enregistre tout seul auprès du dépôt et exécute les jobs "self-hosted".
+services:
+  runner:
+    image: myoung34/github-runner:latest
+    container_name: skillhub-runner
+    restart: unless-stopped
+    environment:
+      REPO_URL: https://github.com/Samilazaar/DossierFilrouge
+      RUNNER_SCOPE: repo
+      RUNNER_NAME: skillhub-vps
+      LABELS: self-hosted,skillhub,vps      # labels custom pour cibler ce runner
+      EPHEMERAL: "true"                       # un job = un runner neuf (sécurité)
+      ACCESS_TOKEN: ${GH_RUNNER_TOKEN}        # jeton GitHub (fourni via le fichier .env)
+    # Accès au Docker de l'hôte pour construire les images
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    # Ressources limitées (le runner ne doit pas étouffer le serveur)
+    mem_limit: 2g
+    cpus: 1.5
