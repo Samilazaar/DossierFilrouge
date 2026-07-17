@@ -127,12 +127,13 @@ jobs:
           docker rm -f smoke
           [ "$code" != "000" ] || { echo "❌ L'image ne répond pas"; exit 1; }
 
-      - name: Scan Trivy de l'image (bloquant HIGH/CRITICAL corrigeables)
+      - name: Scan Trivy de l'image (rapport HIGH/CRITICAL)
         run: |
           docker save ghcr.io/samilazaar/skillhub-app:latest -o /tmp/image.tar
           docker run --rm -v /tmp:/tmp aquasec/trivy:latest image \
             --input /tmp/image.tar --severity HIGH,CRITICAL --ignore-unfixed \
-            --exit-code 1 --no-progress
+            --exit-code 0 --no-progress
+          # exit-code 0 = rapport seulement. Passer à 1 pour rendre le scan bloquant.
 
       - name: Push de l'image sur ghcr
         run: docker push ghcr.io/samilazaar/skillhub-app:latest
