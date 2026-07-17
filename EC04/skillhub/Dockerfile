@@ -29,8 +29,9 @@ FROM dunglas/frankenphp:1-php8.4 AS runtime
 # Extensions PHP nécessaires à l'exécution
 RUN install-php-extensions pdo_pgsql mongodb intl zip opcache
 
-# curl : requis pour le HEALTHCHECK
+# Mise à jour des paquets système (patche les failles corrigeables) + curl (HEALTHCHECK)
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
