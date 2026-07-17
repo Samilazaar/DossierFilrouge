@@ -147,15 +147,41 @@ jobs:
     if: github.ref == 'refs/heads/test'         # déploie seulement sur push "test"
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment: production                     # pause pour validation manuelle (si reviewer configuré)
     steps:
-      - name: Relancer l'app sur le VPS
+      - name: Déploiement + smoke test + rollback automatique
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            set -e
             cd ~/skillhub
-            docker compose pull        # récupère les dernières images
-            docker compose up -d        # relance l'app proprement
-            docker compose ps           # affiche l'état dans les logs Actions
+            IMG=ghcr.io/samilazaar/skillhub-app
+
+            echo "1) Sauvegarde de l'image actuelle (pour rollback)"
+            docker tag $IMG:latest $IMG:previous || true
+
+            echo "2) Déploiement de la nouvelle image"
+            docker compose pull
+            docker compose up -d
+
+            echo "3) Smoke test (l'app répond-elle ?)"
+            code=000
+            for i in $(seq 1 10); do
+              code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:31200 || echo 000)
+              if [ "$code" != "000" ]; then break; fi
+              echo "  tentative $i/10..."; sleep 3
+            done
+
+            if [ "$code" = "000" ]; then
+              echo "❌ Smoke test échoué -> ROLLBACK vers l'image précédente"
+              docker tag $IMG:previous $IMG:latest
+              docker compose up -d
+              docker compose ps
+              exit 1
+            fi
+
+            echo "✅ Smoke test OK (HTTP $code) - déploiement validé"
+            docker compose ps
