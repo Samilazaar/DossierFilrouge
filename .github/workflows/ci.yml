@@ -1,3 +1,13 @@
+# =====================================================================
+# CI — Chef d'orchestre du pipeline SkillHub.
+#
+# Ce fichier contient les tests, puis appelle les deux autres pipelines :
+#   1. ci.yml        (ici)  -> tests et qualité du code
+#   2. security.yml         -> secrets et vulnérabilités
+#   3. cd.yml               -> construction de l'image et déploiement
+#
+# Chaque étape n'est lancée que si la précédente est verte.
+# =====================================================================
 name: CI SkillHub
 
 on:
@@ -16,6 +26,10 @@ permissions:
   contents: read
 
 jobs:
+  # -------------------------------------------------------------------
+  # 1. QUALITÉ — le code compile-t-il et les tests passent-ils ?
+  #    Aucun "continue-on-error" ici : un test rouge arrête le pipeline.
+  # -------------------------------------------------------------------
   quality:
     name: Tests et qualité
     runs-on: ubuntu-latest
@@ -45,135 +59,42 @@ jobs:
       - name: Installation des dépendances
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      # xargs propage le code d'erreur, contrairement à "find -exec" :
+      # une erreur de syntaxe fait bien échouer l'étape.
       - name: Vérification syntaxe PHP (lint)
-        run: find src -name "*.php" -exec php -l {} \;
+        run: find src -name "*.php" -print0 | xargs -0 -n1 php -l
 
       - name: Vérification templates Twig
         run: php bin/console lint:twig templates --env=test
-        continue-on-error: true
 
       - name: Vérification fichiers YAML
         run: php bin/console lint:yaml config --env=test
-        continue-on-error: true
 
       - name: Tests PHPUnit
         run: vendor/bin/phpunit --testdox
-        continue-on-error: true
 
-  # =====================================================================
-  # SECURITY — DevSecOps : détection de secrets + vulnérabilités du code.
-  # =====================================================================
+  # -------------------------------------------------------------------
+  # 2. SÉCURITÉ — pipeline séparé (security.yml), appelé si les tests passent.
+  # -------------------------------------------------------------------
   security:
-    name: Sécurité (gitleaks + Trivy)
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout du code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0            # historique complet pour scanner tous les commits
-
-      - name: Scan de secrets (gitleaks)
-        uses: gitleaks/gitleaks-action@v2.3.9
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Scan des vulnérabilités du code (Trivy fs)
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/src" aquasec/trivy:latest \
-            fs --severity HIGH,CRITICAL --exit-code 0 --no-progress /src/EC04/skillhub
-
-  # =====================================================================
-  # BUILD — Construit l'image, puis la pousse sur ghcr.
-  # Ne tourne que si tests ET sécurité sont verts, et seulement sur "test".
-  # =====================================================================
-  build-push:
-    name: Build & push image (self-hosted VPS)
-    needs: [quality, security]                  # attend tests + sécurité
-    if: github.ref == 'refs/heads/test'
-    runs-on: ubuntu-latest                      # (runner self-hosted VPS installé ; build gardé sur GitHub-hosted pour la fiabilité)
-    timeout-minutes: 25
+    name: Sécurité
+    needs: quality
+    uses: ./.github/workflows/security.yml
+    secrets: inherit
     permissions:
       contents: read
-      packages: write                           # autorise le push sur ghcr
-    steps:
-      - name: Checkout du code
-        uses: actions/checkout@v4
 
-      - name: Connexion à ghcr.io
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Build de l'image
-        run: docker build -t ghcr.io/samilazaar/skillhub-app:latest EC04/skillhub
-
-      - name: Smoke test — l'image démarre et répond ?
-        run: |
-          docker rm -f smoke 2>/dev/null || true
-          docker run -d --name smoke ghcr.io/samilazaar/skillhub-app:latest
-          code=000
-          for i in $(seq 1 15); do
-            code=$(docker exec smoke curl -s -o /dev/null -w '%{http_code}' http://localhost:80 2>/dev/null || echo 000)
-            if [ "$code" != "000" ]; then echo "✅ L'image répond (HTTP $code)"; break; fi
-            echo "  tentative $i/15 (code=$code)"; sleep 3
-          done
-          docker logs smoke | tail -20 || true
-          docker rm -f smoke || true
-          [ "$code" != "000" ] || { echo "❌ L'image ne répond pas"; exit 1; }
-
-      - name: Scan Trivy de l'image (rapport HIGH/CRITICAL)
-        run: |
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image \
-            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 0 --no-progress \
-            ghcr.io/samilazaar/skillhub-app:latest
-          # exit-code 0 = rapport seulement. Passer à 1 pour rendre le scan bloquant.
-
-      - name: Push de l'image sur ghcr
-        run: docker push ghcr.io/samilazaar/skillhub-app:latest
-
-  # =====================================================================
-  # CD — Déploiement sur le VPS, UNIQUEMENT si l'image a été construite/poussée.
-  # =====================================================================
-  deploy:
-    name: Déploiement VPS
-    needs: build-push                           # attend la nouvelle image
-    if: github.ref == 'refs/heads/test'         # déploie seulement sur push "test"
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment: production                     # pause pour validation manuelle (si reviewer configuré)
-    steps:
-      - name: Déploiement + smoke test + rollback automatique
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            set -e
-            cd ~/skillhub
-            IMG=ghcr.io/samilazaar/skillhub-app
-
-            echo "1) Sauvegarde de l'image actuelle (pour rollback)"
-            docker tag $IMG:latest $IMG:previous || true
-
-            echo "2) Déploiement de la nouvelle image"
-            docker compose pull
-            docker compose up -d
-
-            echo "3) Smoke test (l'app répond-elle ?)"
-            code=000
-            for i in $(seq 1 10); do
-              code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:31200 || echo 000)
-              if [ "$code" != "000" ]; then break; fi
-              echo "  tentative $i/10..."; sleep 3
-            done
-
-            if [ "$code" = "000" ]; then
-              echo "❌ Smoke test échoué -> ROLLBACK vers l'image précédente"
-              docker tag $IMG:previous $IMG:latest
-              docker compose up -d
-              docker compose ps
-              exit 1
-            fi
-
-            echo "✅ Smoke test OK (HTTP $code) - déploiement validé"
-            docker compose ps
+  # -------------------------------------------------------------------
+  # 3. LIVRAISON — pipeline séparé (cd.yml), uniquement sur la branche "test"
+  #    et uniquement si tests ET sécurité sont verts.
+  # -------------------------------------------------------------------
+  cd:
+    name: Build & déploiement
+    needs: [quality, security]
+    if: github.ref == 'refs/heads/test'
+    uses: ./.github/workflows/cd.yml
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write       # push de l'image sur ghcr
+      id-token: write       # signature cosign sans clé

@@ -1,0 +1,37 @@
+# =====================================================================
+# SECURITY — DevSecOps : détection de secrets + vulnérabilités du code.
+#
+# Appelé par ci.yml (workflow_call) une fois les tests verts.
+# Les scans sont BLOQUANTS : une faille HIGH/CRITICAL corrigeable
+# arrête le pipeline, l'image n'est ni construite ni déployée.
+# =====================================================================
+name: Sécurité SkillHub
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: gitleaks + Trivy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0            # historique complet pour scanner tous les commits
+
+      - name: Scan de secrets (gitleaks)
+        uses: gitleaks/gitleaks-action@v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # --exit-code 1 = bloquant. --ignore-unfixed : on n'arrête pas le
+      # pipeline pour une faille sans correctif disponible.
+      - name: Scan des vulnérabilités du code (Trivy fs)
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/src" aquasec/trivy:latest \
+            fs --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --no-progress /src/EC04/skillhub

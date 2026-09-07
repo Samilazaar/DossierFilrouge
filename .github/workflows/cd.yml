@@ -1,0 +1,135 @@
+# =====================================================================
+# CD — Construction, signature et déploiement de l'image SkillHub.
+#
+# Appelé par ci.yml (workflow_call), uniquement sur la branche "test"
+# et uniquement si les tests et les scans de sécurité sont verts.
+#
+#   build-push : build -> smoke test -> scan bloquant -> push -> signature cosign
+#   deploy     : validation manuelle -> déploiement -> smoke test -> rollback auto
+# =====================================================================
+name: CD SkillHub
+
+on:
+  workflow_call:
+
+env:
+  IMAGE: ghcr.io/samilazaar/skillhub-app
+
+jobs:
+  # -------------------------------------------------------------------
+  # BUILD — construit l'image, la contrôle, la pousse, puis la signe.
+  # -------------------------------------------------------------------
+  build-push:
+    name: Build, scan, signature (image)
+    runs-on: ubuntu-latest            # (runner self-hosted VPS installé ; build gardé sur GitHub-hosted pour la fiabilité)
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      packages: write                 # autorise le push sur ghcr
+      id-token: write                 # jeton OIDC : signature cosign sans clé privée
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Connexion à ghcr.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build de l'image
+        run: docker build -t $IMAGE:latest EC04/skillhub
+
+      - name: Smoke test — l'image démarre et répond ?
+        run: |
+          docker rm -f smoke 2>/dev/null || true
+          docker run -d --name smoke $IMAGE:latest
+          code=000
+          for i in $(seq 1 15); do
+            code=$(docker exec smoke curl -s -o /dev/null -w '%{http_code}' http://localhost:80 2>/dev/null || echo 000)
+            if [ "$code" != "000" ]; then echo "✅ L'image répond (HTTP $code)"; break; fi
+            echo "  tentative $i/15 (code=$code)"; sleep 3
+          done
+          docker logs smoke | tail -20 || true
+          docker rm -f smoke || true
+          [ "$code" != "000" ] || { echo "❌ L'image ne répond pas"; exit 1; }
+
+      # --exit-code 1 = BLOQUANT. Une faille HIGH/CRITICAL corrigeable
+      # empêche le push : on ne déploie pas une image vulnérable.
+      - name: Scan Trivy de l'image (bloquant)
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image \
+            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --no-progress \
+            $IMAGE:latest
+
+      - name: Push de l'image sur ghcr
+        id: push
+        run: |
+          docker push $IMAGE:latest
+          # Empreinte unique de l'image poussée : c'est ELLE qu'on signe,
+          # pas le tag "latest" qui peut être redéfini.
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE:latest)
+          echo "Image poussée : $DIGEST"
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+
+      - name: Installation de cosign
+        uses: sigstore/cosign-installer@v3.7.0
+
+      # Signature "keyless" : aucune clé privée à stocker. L'identité du
+      # workflow GitHub sert de preuve, le certificat est publié dans Rekor.
+      - name: Signature de l'image (cosign)
+        run: cosign sign --yes "${{ steps.push.outputs.digest }}"
+
+      - name: Vérification de la signature
+        run: |
+          cosign verify \
+            --certificate-identity-regexp "^https://github.com/${{ github.repository }}/" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${{ steps.push.outputs.digest }}"
+
+  # -------------------------------------------------------------------
+  # DEPLOY — installe l'image sur le VPS, avec retour arrière si KO.
+  # L'environnement "production" impose une validation manuelle.
+  # -------------------------------------------------------------------
+  deploy:
+    name: Déploiement VPS
+    needs: build-push
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production           # pause pour validation manuelle (si reviewer configuré)
+    steps:
+      - name: Déploiement + smoke test + rollback automatique
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            cd ~/skillhub
+            IMG=ghcr.io/samilazaar/skillhub-app
+
+            echo "1) Sauvegarde de l'image actuelle (pour rollback)"
+            docker tag $IMG:latest $IMG:previous || true
+
+            echo "2) Déploiement de la nouvelle image"
+            docker compose pull
+            docker compose up -d
+
+            echo "3) Smoke test (l'app répond-elle ?)"
+            code=000
+            for i in $(seq 1 10); do
+              code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:31200 || echo 000)
+              if [ "$code" != "000" ]; then break; fi
+              echo "  tentative $i/10..."; sleep 3
+            done
+
+            if [ "$code" = "000" ]; then
+              echo "❌ Smoke test échoué -> ROLLBACK vers l'image précédente"
+              docker tag $IMG:previous $IMG:latest
+              docker compose up -d
+              docker compose ps
+              exit 1
+            fi
+
+            echo "✅ Smoke test OK (HTTP $code) - déploiement validé"
+            docker compose ps
