@@ -4,6 +4,12 @@
 
 echo "🔍 Pre-commit : vérification qualité du code..."
 
+# Les binaires vivent dans le dossier de l'application, pas a la racine du
+# depot : sans ce chemin, les tests "-f vendor/bin/..." echouaient toujours
+# et les controles etaient silencieusement sautes.
+REPO_ROOT=$(git rev-parse --show-toplevel)
+APP_DIR="$REPO_ROOT/EC04/skillhub"
+
 # Récupérer uniquement les fichiers PHP/YAML modifiés et indexés
 FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(php|ya?ml)$')
 
@@ -25,9 +31,9 @@ for FILE in $FILES; do
 done
 
 # 2. PHP-CS-Fixer (style) - si installé
-if [ -f vendor/bin/php-cs-fixer ]; then
+if [ -f "$APP_DIR/vendor/bin/php-cs-fixer" ]; then
     echo "→ PHP-CS-Fixer..."
-    vendor/bin/php-cs-fixer fix --dry-run --diff $FILES
+    (cd "$APP_DIR" && vendor/bin/php-cs-fixer fix --dry-run --diff $FILES)
     if [ $? -ne 0 ]; then
         echo "❌ PHP-CS-Fixer : style de code incorrect."
         echo "   Lance : vendor/bin/php-cs-fixer fix"
@@ -36,9 +42,11 @@ if [ -f vendor/bin/php-cs-fixer ]; then
 fi
 
 # 3. PHPStan (analyse statique) - si installé
-if [ -f vendor/bin/phpstan ]; then
+if [ -f "$APP_DIR/vendor/bin/phpstan" ]; then
     echo "→ PHPStan..."
-    vendor/bin/phpstan analyse src --level=5 --no-progress
+    # Meme configuration qu'en integration continue (phpstan.dist.neon) :
+    # un commit qui passe en local passe aussi le pipeline.
+    (cd "$APP_DIR" && vendor/bin/phpstan analyse --no-progress)
     if [ $? -ne 0 ]; then
         echo "❌ PHPStan : erreurs détectées."
         exit 1

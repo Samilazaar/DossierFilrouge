@@ -45,7 +45,7 @@ class FeedbackController extends AbstractController
         }
 
         if (!$this->documentManager) {
-            $request->getSession()->getFlashBag()->add('warning', 'Les feedbacks ne sont pas disponibles.');
+            $this->addFlash('warning', 'Les feedbacks ne sont pas disponibles.');
             return $this->redirectToRoute('app_atelier_detail', ['id' => $atelierId]);
         }
 

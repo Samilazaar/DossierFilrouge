@@ -1,0 +1,14 @@
+# Analyse statique du code SkillHub.
+#
+# PHPStan relit le code sans l'executer et signale les appels impossibles,
+# les types incoherents et le code mort. Le niveau 2 verifie l'existence
+# des methodes appelees : c'est ce niveau qui a revele les appels a
+# getFlashBag() sur SessionInterface, corriges dans la foulee.
+#
+# Le niveau sera releve progressivement (objectif 5, comme le hook local).
+parameters:
+    level: 2
+    paths:
+        - src
+    excludePaths:
+        - src/Kernel.php

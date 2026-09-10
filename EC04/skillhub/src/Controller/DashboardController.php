@@ -157,12 +157,12 @@ class DashboardController extends AbstractController
         }
 
         if ($this->repository->findInscription($user, $atelier)) {
-            $request->getSession()->getFlashBag()->add('warning', 'Vous êtes déjà inscrit à cet atelier.');
+            $this->addFlash('warning', 'Vous êtes déjà inscrit à cet atelier.');
             return $this->redirectToRoute('app_atelier_detail', ['id' => $id]);
         }
 
         if ($atelier->estComplet()) {
-            $request->getSession()->getFlashBag()->add('error', 'Cet atelier est complet.');
+            $this->addFlash('error', 'Cet atelier est complet.');
             return $this->redirectToRoute('app_atelier_detail', ['id' => $id]);
         }
 
@@ -173,7 +173,7 @@ class DashboardController extends AbstractController
 
         $this->repository->addInscription($inscription);
 
-        $request->getSession()->getFlashBag()->add('success', 'Inscription réussie !');
+        $this->addFlash('success', 'Inscription réussie !');
         return $this->redirectToRoute('app_atelier_detail', ['id' => $id]);
     }
 
@@ -192,13 +192,13 @@ class DashboardController extends AbstractController
 
         $inscription = $this->repository->findInscription($user, $atelier);
         if (!$inscription) {
-            $request->getSession()->getFlashBag()->add('warning', 'Vous n\'êtes pas inscrit à cet atelier.');
+            $this->addFlash('warning', 'Vous n\'êtes pas inscrit à cet atelier.');
             return $this->redirectToRoute('app_atelier_detail', ['id' => $id]);
         }
 
         $this->repository->removeInscription($inscription);
 
-        $request->getSession()->getFlashBag()->add('success', 'Désinscription réussie !');
+        $this->addFlash('success', 'Désinscription réussie !');
         return $this->redirectToRoute('app_dashboard_inscriptions');
     }
 
