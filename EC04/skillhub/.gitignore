@@ -14,3 +14,7 @@ EC03/skillhub/.env.dev
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+
+# Dumps de base de donnees : contiennent des donnees reelles (RGPD)
+/dump.sql
+*.dump
