@@ -1,0 +1,49 @@
+#!/bin/bash
+# Hook pre-commit SkillHub - Vérification qualité code
+# Bloque le commit si le code ne passe pas les contrôles
+
+echo "🔍 Pre-commit : vérification qualité du code..."
+
+# Récupérer uniquement les fichiers PHP/YAML modifiés et indexés
+FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(php|ya?ml)$')
+
+if [ -z "$FILES" ]; then
+    echo "✅ Aucun fichier PHP/YAML à vérifier."
+    exit 0
+fi
+
+# 1. Vérification syntaxe PHP (lint)
+echo "→ Vérification syntaxe PHP..."
+for FILE in $FILES; do
+    if [[ "$FILE" == *.php ]]; then
+        php -l "$FILE" > /dev/null
+        if [ $? -ne 0 ]; then
+            echo "❌ Erreur de syntaxe PHP dans $FILE"
+            exit 1
+        fi
+    fi
+done
+
+# 2. PHP-CS-Fixer (style) - si installé
+if [ -f vendor/bin/php-cs-fixer ]; then
+    echo "→ PHP-CS-Fixer..."
+    vendor/bin/php-cs-fixer fix --dry-run --diff $FILES
+    if [ $? -ne 0 ]; then
+        echo "❌ PHP-CS-Fixer : style de code incorrect."
+        echo "   Lance : vendor/bin/php-cs-fixer fix"
+        exit 1
+    fi
+fi
+
+# 3. PHPStan (analyse statique) - si installé
+if [ -f vendor/bin/phpstan ]; then
+    echo "→ PHPStan..."
+    vendor/bin/phpstan analyse src --level=5 --no-progress
+    if [ $? -ne 0 ]; then
+        echo "❌ PHPStan : erreurs détectées."
+        exit 1
+    fi
+fi
+
+echo "✅ Tous les contrôles sont passés !"
+exit 0
