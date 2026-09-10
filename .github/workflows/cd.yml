@@ -72,7 +72,7 @@ jobs:
           echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
 
       - name: Installation de cosign
-        uses: sigstore/cosign-installer@v3.7.0
+        uses: sigstore/cosign-installer@v4.1.2
 
       # Signature "keyless" : aucune clé privée à stocker. L'identité du
       # workflow GitHub sert de preuve, le certificat est publié dans Rekor.
