@@ -1,13 +1,20 @@
+# =====================================================================
+# Surcharge de developpement local.
+#
+# Compose lit ce fichier automatiquement en plus de compose.yaml, et
+# uniquement en local : il n'est pas deploye sur le serveur.
+#
+# Les bases sont publiees pour pouvoir les inspecter depuis un client
+# graphique, mais liees a 127.0.0.1 : joignables depuis cette machine
+# seulement, jamais depuis le reseau. La version precedente publiait
+# 5432 et 27017 sur toutes les interfaces.
+# =====================================================================
 
 services:
-###> doctrine/doctrine-bundle ###
   database:
     ports:
-      - "5432:5432"
-###< doctrine/doctrine-bundle ###
+      - "127.0.0.1:5432:5432"
 
-###> doctrine/mongodb-odm-bundle ###
   mongodb:
     ports:
-      - "27017:27017"
-###< doctrine/mongodb-odm-bundle ###
+      - "127.0.0.1:27017:27017"
