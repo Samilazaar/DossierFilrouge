@@ -39,6 +39,30 @@ jobs:
       run:
         working-directory: EC04/skillhub
 
+    # Base de données éphémère, détruite avec le runner. Sans elle, le test
+    # d'intégration GET /api/workshops échouait faute de connexion : le
+    # pipeline était rouge en permanence et ne prouvait plus rien.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_DB: app
+        ports:
+          - 5432:5432
+        # Le job attend que la base réponde avant de démarrer les étapes.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # Doctrine suffixe le nom de la base par _test en environnement de test :
+      # la base réellement utilisée sera app_test.
+      DATABASE_URL: "postgresql://app:app@127.0.0.1:5432/app?serverVersion=16&charset=utf8"
+
     steps:
       - name: Checkout du code
         uses: actions/checkout@v4
@@ -47,7 +71,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: ctype, iconv, mongodb, pdo, pdo_sqlite
+          extensions: ctype, iconv, mongodb, pdo, pdo_pgsql, pdo_sqlite
           tools: composer
 
       - name: Cache des dépendances Composer
@@ -69,6 +93,13 @@ jobs:
 
       - name: Vérification fichiers YAML
         run: php bin/console lint:yaml config --env=test
+
+      # Le schéma est construit à partir des entités, pas des migrations :
+      # la table sessions, ajoutée après la dernière migration, en fait partie.
+      - name: Préparation de la base de test
+        run: |
+          php bin/console doctrine:database:create --if-not-exists --env=test
+          php bin/console doctrine:schema:create --env=test
 
       - name: Tests PHPUnit
         run: vendor/bin/phpunit --testdox
