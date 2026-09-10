@@ -70,6 +70,13 @@ jobs:
       - name: Vérification fichiers YAML
         run: php bin/console lint:yaml config --env=test
 
+      # Analyse statique BLOQUANTE : PHPStan relit le code sans l'exécuter.
+      # Contrairement au lint (qui ne voit que la syntaxe), il détecte les
+      # appels à des méthodes inexistantes. Un échec ici arrête le pipeline
+      # et empêche la fusion vers main.
+      - name: Analyse statique (PHPStan)
+        run: vendor/bin/phpstan analyse --no-progress
+
       - name: Tests PHPUnit
         run: vendor/bin/phpunit --testdox
 
