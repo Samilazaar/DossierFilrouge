@@ -1,0 +1,92 @@
+# =====================================================================
+# RELEASE — Publication d'une version stable.
+#
+# Déclenché par la pose d'un tag de version sémantique (vMAJEUR.MINEUR.CORRECTIF).
+#
+# Ce workflow publie une image PORTANT LE NUMÉRO DE VERSION, à côté du
+# tag "latest" produit par la livraison continue. Une version stable doit
+# rester récupérable telle quelle : "latest" bouge, "v1.2.0" jamais.
+#
+# Il ne déploie PAS. Publier et déployer sont deux décisions distinctes :
+# le déploiement reste piloté par cd.yml, sous environnement "production".
+# =====================================================================
+name: Publication d'une version
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: ghcr.io/samilazaar/skillhub-app
+
+jobs:
+  publish:
+    name: Construire, contrôler, publier et signer
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      packages: write       # push de l'image sur ghcr
+      id-token: write       # jeton OIDC : signature cosign sans clé privée
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      # Le numéro de version vient du tag lui-même : aucune saisie manuelle,
+      # donc aucun risque d'écart entre le tag Git et le tag de l'image.
+      - name: Extraction du numéro de version
+        id: version
+        run: echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Connexion à ghcr.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build de l'image versionnée
+        run: docker build -t $IMAGE:${{ steps.version.outputs.value }} EC04/skillhub
+
+      - name: Smoke test — l'image démarre et répond ?
+        run: |
+          docker rm -f smoke-release 2>/dev/null || true
+          docker run -d --name smoke-release $IMAGE:${{ steps.version.outputs.value }}
+          code=000
+          for i in $(seq 1 15); do
+            code=$(docker exec smoke-release curl -s -o /dev/null -w '%{http_code}' http://localhost:80 2>/dev/null || echo 000)
+            if [ "$code" != "000" ]; then echo "✅ L'image répond (HTTP $code)"; break; fi
+            echo "  tentative $i/15 (code=$code)"; sleep 3
+          done
+          docker rm -f smoke-release || true
+          [ "$code" != "000" ] || { echo "❌ L'image ne répond pas"; exit 1; }
+
+      # BLOQUANT : on ne publie pas une version stable vulnérable.
+      - name: Scan Trivy de l'image (bloquant)
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image \
+            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --no-progress \
+            $IMAGE:${{ steps.version.outputs.value }}
+
+      - name: Publication de l'image versionnée
+        id: push
+        run: |
+          docker push $IMAGE:${{ steps.version.outputs.value }}
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE:${{ steps.version.outputs.value }})
+          echo "Image publiée : $DIGEST"
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+
+      - name: Installation de cosign
+        uses: sigstore/cosign-installer@v3.7.0
+
+      # Signature de l'empreinte, pas du tag : un tag peut être redéfini,
+      # une empreinte non.
+      - name: Signature de l'image (cosign)
+        run: cosign sign --yes "${{ steps.push.outputs.digest }}"
+
+      - name: Vérification de la signature
+        run: |
+          cosign verify \
+            --certificate-identity-regexp "^https://github.com/${{ github.repository }}/" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${{ steps.push.outputs.digest }}"
