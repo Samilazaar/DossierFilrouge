@@ -14,15 +14,16 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Service\IAService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class DashboardController extends AbstractController
 {
     private DoctrineDataRepository $repository;
-    private ?object $documentManager;
+    private ?DocumentManager $documentManager;
     private IAService $iaService;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(DoctrineDataRepository $repository, IAService $iaService, EntityManagerInterface $entityManager, ?object $documentManager = null)
+    public function __construct(DoctrineDataRepository $repository, IAService $iaService, EntityManagerInterface $entityManager, ?DocumentManager $documentManager = null)
     {
         $this->repository = $repository;
         $this->documentManager = $documentManager;
@@ -99,7 +100,7 @@ class DashboardController extends AbstractController
     }
 
     #[Route('/dashboard/atelier/{id}', name: 'app_atelier_detail')]
-    public function detail(int $id, SessionInterface $session): Response
+    public function detail(int $id, Request $request, SessionInterface $session): Response
     {
         $user = $this->checkUser($session);
         if (!$user) {
@@ -109,6 +110,18 @@ class DashboardController extends AbstractController
         $atelier = $this->repository->findAtelierById($id);
         if (!$atelier) {
             throw $this->createNotFoundException('Atelier non trouvé');
+        }
+
+        if ($this->documentManager) {
+            $visitLog = new \App\Document\VisitLog();
+            $visitLog->setUserId((string) $user->getId());
+            $visitLog->setAtelierId((string) $id);
+            $visitLog->setAction('view');
+            $visitLog->setTimestamp(new \DateTime());
+            $visitLog->setIpAddress($request->getClientIp());
+            $visitLog->setUserAgent($request->headers->get('User-Agent'));
+            $this->documentManager->persist($visitLog);
+            $this->documentManager->flush();
         }
 
         $inscription = $this->repository->findInscription($user, $atelier);

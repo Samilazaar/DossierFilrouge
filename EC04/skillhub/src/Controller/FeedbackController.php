@@ -9,11 +9,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+
 class FeedbackController extends AbstractController
 {
-    private ?object $documentManager;
+    private ?DocumentManager $documentManager;
 
-    public function __construct(?object $documentManager = null)
+    public function __construct(?DocumentManager $documentManager = null)
     {
         $this->documentManager = $documentManager;
     }
