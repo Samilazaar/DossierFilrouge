@@ -18,3 +18,7 @@ EC03/skillhub/.env.dev
 # Dumps de base de donnees : contiennent des donnees reelles (RGPD)
 /dump.sql
 *.dump
+
+# Fichier de configuration local : contient les valeurs reelles.
+# Le modele sans valeur sensible est versionne (voir le fichier modele).
+/.env
