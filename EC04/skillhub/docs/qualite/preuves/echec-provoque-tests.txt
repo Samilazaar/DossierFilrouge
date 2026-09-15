@@ -1,0 +1,18 @@
+PHPUnit 12.5.17 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.5.1
+Configuration: /Users/samilazaar/DossierFilrouge/EC04/skillhub/phpunit.dist.xml
+
+..........[41;37mF[0m....                                                   15 / 15 (100%)
+
+Time: 00:00.023, Memory: 16.00 MB
+
+There was 1 failure:
+
+1) App\Tests\Entity\AtelierTest::testUneDesinscriptionNeDepasseJamaisLaCapaciteMaximale
+Failed asserting that 13 is identical to 12.
+
+/Users/samilazaar/DossierFilrouge/EC04/skillhub/tests/Entity/AtelierTest.php:138
+
+[37;41mFAILURES![0m
+[37;41mTests: 15[0m[37;41m, Assertions: 19[0m[37;41m, Failures: 1[0m[37;41m.[0m
