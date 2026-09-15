@@ -1,5 +1,8 @@
 <?php
 namespace App\Entity;
+
+use App\Exception\AtelierCompletException;
+use App\Exception\PlacesNonRenseigneesException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -174,15 +177,32 @@ class Atelier
         return max(0, $this->placesRestantes);
     }
 
+    /**
+     * @throws PlacesNonRenseigneesException si la capacité de l'atelier n'a jamais été renseignée
+     * @throws AtelierCompletException       si l'atelier est déjà complet
+     */
     public function decrementerPlaces(): void
     {
-        if ($this->placesRestantes > 0) {
-            $this->placesRestantes--;
+        if ($this->placesRestantes === null) {
+            throw PlacesNonRenseigneesException::pourAtelier($this->id);
         }
+
+        if ($this->placesRestantes <= 0) {
+            throw AtelierCompletException::pourAtelier($this->id);
+        }
+
+        $this->placesRestantes--;
     }
 
+    /**
+     * @throws PlacesNonRenseigneesException si la capacité de l'atelier n'a jamais été renseignée
+     */
     public function incrementerPlaces(): void
     {
+        if ($this->placesRestantes === null || $this->capaciteMax === null) {
+            throw PlacesNonRenseigneesException::pourAtelier($this->id);
+        }
+
         if ($this->placesRestantes < $this->capaciteMax) {
             $this->placesRestantes++;
         }
