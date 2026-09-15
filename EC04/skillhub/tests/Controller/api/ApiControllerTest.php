@@ -9,10 +9,29 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class ApiControllerTest extends WebTestCase
 {
     // Test 1 : vérifier que GET /api/workshops fonctionne
+    //
+    // Ce test lit la liste des ateliers en base : c'est un test d'INTEGRATION,
+    // pas un test unitaire. Sans base démarrée il ne peut rien prouver, donc on
+    // l'ignore explicitement au lieu de le laisser rouge — une infrastructure
+    // absente n'est pas une régression du code.
+    // Pour le faire tourner : docker compose -f compose.test.yaml up -d
     public function testGetWorkshops(): void
     {
         // Crée un faux navigateur pour envoyer des requêtes
         $client = static::createClient();
+
+        try {
+            $client->getContainer()
+                ->get('doctrine')
+                ->getConnection()
+                ->executeQuery('SELECT 1');
+        } catch (\Doctrine\DBAL\Exception $e) {
+            self::markTestSkipped(
+                'Base de test injoignable. Démarrez-la avec : '
+                . 'docker compose -f compose.test.yaml up -d'
+            );
+        }
+
         // Envoie une requête GET sur /api/workshops
         $client->request('GET', '/api/workshops');
 
