@@ -3,7 +3,8 @@
 **Module** : Qualité logicielle et amélioration continue — CDWFS, bloc BC04, FM08
 **Critères** : C33.1 conformité aux standards · C33.2 maintenabilité
 **Relecteur** : Sami Lazaar — **Date** : 14 septembre 2026
-**Objet relu** : `docs/qualite/tp3-pull-request/ExportController.php` (74 lignes) et sa description
+**Objet relu** : `ExportController.php` (74 lignes) et sa description, fournis par l'enonce du TP 3.
+**Note** : le code d'exercice n'est pas versionne dans ce depot — il est volontairement defectueux et n'a rien a faire dans une application.
 
 Méthode : lecture complète de la description puis du diff sans commenter, puis
 application de la checklist de revue point par point, du plus coûteux au moins
@@ -54,7 +55,7 @@ coûteux à corriger.
 
 ## 3. Le test manquant, écrit
 
-Fichier : `docs/qualite/tp3-pull-request/tp3-test-manquant.php`
+Fichier : `tp3-test-manquant.php`, conserve hors du depot avec le reste du support d'exercice.
 
 Il couvre le défaut n° 7, le moins coûteux à corriger et le plus visible pour
 l'utilisateur. Il échoue tant que la vérification du `null` n'est pas ajoutée :

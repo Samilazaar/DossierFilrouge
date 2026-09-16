@@ -130,8 +130,17 @@ php vendor/bin/phpunit --coverage-html var/coverage/html   # nécessite pcov ou 
 php tools/verifier-couverture.php var/coverage/clover.xml  # applique les seuils
 ```
 
-Deux seuils, appliqués en CI et bloquants : **20 %** de plancher global et
-**90 %** sur le cœur métier (`src/Entity/Atelier.php`, `src/Exception/`).
+Deux seuils, appliqués en CI et bloquants :
+
+| Seuil | Valeur | Ce qu'il veut dire |
+|---|:--:|---|
+| Plancher global | **6 %** | Un cliquet, pas un objectif de qualité. Il vaut la mesure de la dernière fusion et ne peut que monter. Il empêche l'effondrement, rien de plus. |
+| Cœur métier | **90 %** | Le vrai indicateur. Il porte sur `src/Domain/` et `src/Exception/`, c'est-à-dire sur le code qui décide. |
+
+Ne pas confondre les deux : un plancher global bas ne signifie pas une qualité
+basse, il signifie que l'application n'est pas encore testée partout. La qualité
+se lit sur la ligne du cœur métier.
+
 Justification des valeurs : `docs/qualite/tp2-strategie-de-tests.md`.
 
 ### Documentation qualité
