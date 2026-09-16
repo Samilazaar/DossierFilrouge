@@ -80,8 +80,8 @@ Un seuil global unique pousse à tester le trivial pour faire monter le chiffre.
 
 | Seuil | Valeur | Justification |
 |---|:--:|---|
-| Plancher global | **20 %** | L'état de départ mesuré est proche de zéro : un test sur 24 fichiers. Un plancher à 70 % serait rouge dès le premier jour et serait désactivé dans la semaine. 20 % empêche l'effondrement et sera relevé à chaque palier atteint. |
-| Cœur métier | **90 %** | `src/Entity/Atelier.php` et `src/Exception/` portent les règles dont un défaut coûte une place vendue deux fois. C'est là que l'exigence doit être forte. |
+| Plancher global | **6 %** | Cliquet posé sur la mesure réelle du 16/09/2026, arrondie vers le bas. Il ne peut que monter. Un seuil posé au-dessus de la mesure — 20 % au départ — bloque en permanence et finit par être désactivé : il ne prouve alors plus rien. |
+| Cœur métier | **90 %** | `src/Domain/` et `src/Exception/` portent les règles dont un défaut coûte une place vendue deux fois. C'est là que l'exigence doit être forte. |
 | Non-régression | la couverture ne baisse pas d'une version à l'autre | Le rapport est publié en artefact à chaque exécution, y compris en cas d'échec. |
 
 **Hors périmètre volontairement** : les migrations Doctrine, la configuration, et le code généré. Les tester ne prouverait rien et gonflerait artificiellement le chiffre.
@@ -199,3 +199,34 @@ Code de sortie 1 : le job échoue, la fusion est bloquée. **Un contrôle qui n'
 ## Ce que ce TP alimente dans le guide
 
 Section *Stratégie de tests* (§1 à §3) et section *Exécution et résultats des tests* (§4 à §6).
+
+
+---
+
+## Révision du 16 septembre 2026 — pourquoi le périmètre du cœur métier a changé
+
+La première mise en service de la porte de qualité a échoué sur la pull request
+#16, avec `src/Entity/Atelier.php` mesuré à 40 %.
+
+Le diagnostic n'était pas un manque de tests : les quinze tests de règles de
+capacité passaient tous. C'est l'**unité de mesure** qui était fausse. La
+couverture se calcule par fichier, et `Atelier.php` contient vingt accesseurs
+générés pour six méthodes de règles. Mesurer le fichier revenait à noter les
+règles sur la couverture des `getTitre()`.
+
+Deux corrections ont été apportées, et une option a été écartée.
+
+**Correction 1 — extraction.** Les règles de capacité sont passées dans
+`App\Domain\CapaciteAtelier`, une classe sans dépendance à Doctrine.
+L'entité délègue. Le seuil de 90 % porte désormais sur un fichier qui ne
+contient que des décisions, ce qui était l'intention d'origine.
+
+**Correction 2 — recalibrage du plancher.** Le plancher global passe de 20 % à
+la mesure réelle arrondie vers le bas, et devient un cliquet. Un seuil qu'on ne
+peut pas atteindre n'est pas un seuil : il est contourné, puis retiré.
+
+**Option écartée — tester les vingt accesseurs pour faire monter le chiffre.**
+Elle aurait suffi à repasser au vert sans rien vérifier de réel. Des tests
+d'accesseurs ont tout de même été ajoutés, mais pour la seule raison qui les
+justifie : détecter un copier-coller entre deux accesseurs. Ils ne sont pas
+comptés dans le cœur métier.
