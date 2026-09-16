@@ -1,8 +1,7 @@
 <?php
 namespace App\Entity;
 
-use App\Exception\AtelierCompletException;
-use App\Exception\PlacesNonRenseigneesException;
+use App\Domain\CapaciteAtelier;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -167,45 +166,36 @@ class Atelier
         return $this;
     }
 
+    private function capacite(): CapaciteAtelier
+    {
+        return new CapaciteAtelier($this->capaciteMax, $this->placesRestantes, $this->id);
+    }
+
     public function estComplet(): bool
     {
-        return $this->placesRestantes <= 0;
+        return $this->capacite()->estComplet();
     }
 
     public function getPlacesDisponibles(): int
     {
-        return max(0, $this->placesRestantes);
+        return $this->capacite()->placesDisponibles();
     }
 
     /**
-     * @throws PlacesNonRenseigneesException si la capacité de l'atelier n'a jamais été renseignée
-     * @throws AtelierCompletException       si l'atelier est déjà complet
+     * @throws \App\Exception\PlacesNonRenseigneesException si la capacité n'a jamais été renseignée
+     * @throws \App\Exception\AtelierCompletException       si l'atelier est déjà complet
      */
     public function decrementerPlaces(): void
     {
-        if ($this->placesRestantes === null) {
-            throw PlacesNonRenseigneesException::pourAtelier($this->id);
-        }
-
-        if ($this->placesRestantes <= 0) {
-            throw AtelierCompletException::pourAtelier($this->id);
-        }
-
-        $this->placesRestantes--;
+        $this->placesRestantes = $this->capacite()->apresUneInscription();
     }
 
     /**
-     * @throws PlacesNonRenseigneesException si la capacité de l'atelier n'a jamais été renseignée
+     * @throws \App\Exception\PlacesNonRenseigneesException si la capacité n'a jamais été renseignée
      */
     public function incrementerPlaces(): void
     {
-        if ($this->placesRestantes === null || $this->capaciteMax === null) {
-            throw PlacesNonRenseigneesException::pourAtelier($this->id);
-        }
-
-        if ($this->placesRestantes < $this->capaciteMax) {
-            $this->placesRestantes++;
-        }
+        $this->placesRestantes = $this->capacite()->apresUneDesinscription();
     }
 
     public function getFormateurNom(): string
