@@ -99,13 +99,57 @@ php bin/console nelmio:apidoc:dump --format=json > openapi.json
 ## Tests
 
 ```bash
-php bin/phpunit --testdox
+php vendor/bin/phpunit --testdox
 ```
 
-3 tests sur l'API :
-- `testGetWorkshops` — GET /api/workshops retourne 200 + JSON
-- `testCreateInvalidWorkshop` — POST sans titre retourne 422
-- `testCreateWorkshopWithMock` — POST valide retourne 201 (email mocké)
+22 tests répartis sur trois niveaux :
+
+| Fichier | Niveau | Tests | Base de données |
+|---|---|:--:|---|
+| `tests/Entity/AtelierTest.php` | unitaire — règles de capacité | 15 | non |
+| `tests/Controller/api/CreationAtelierTest.php` | API + doublure de notification | 2 | non |
+| `tests/Controller/api/ApiControllerTest.php` | API | 3 | oui, pour 1 test |
+| `tests/Integration/PersistanceAtelierTest.php` | persistance Doctrine | 2 | oui |
+
+Sans base démarrée, les tests qui en ont besoin sont **ignorés** (`S` dans la
+sortie), pas en échec. Les 19 autres passent en moins d'une seconde.
+
+### Avec la base de données
+
+```bash
+docker compose -f compose.test.yaml up -d          # base neuve, port 55432, sans volume
+php bin/console doctrine:schema:create --env=test
+php vendor/bin/phpunit
+docker compose -f compose.test.yaml down           # tout disparaît
+```
+
+### Couverture
+
+```bash
+php vendor/bin/phpunit --coverage-html var/coverage/html   # nécessite pcov ou xdebug
+php tools/verifier-couverture.php var/coverage/clover.xml  # applique les seuils
+```
+
+Deux seuils, appliqués en CI et bloquants :
+
+| Seuil | Valeur | Ce qu'il veut dire |
+|---|:--:|---|
+| Plancher global | **6 %** | Un cliquet, pas un objectif de qualité. Il vaut la mesure de la dernière fusion et ne peut que monter. Il empêche l'effondrement, rien de plus. |
+| Cœur métier | **90 %** | Le vrai indicateur. Il porte sur `src/Domain/` et `src/Exception/`, c'est-à-dire sur le code qui décide. |
+
+Ne pas confondre les deux : un plancher global bas ne signifie pas une qualité
+basse, il signifie que l'application n'est pas encore testée partout. La qualité
+se lit sur la ligne du cœur métier.
+
+Justification des valeurs : `docs/qualite/tp2-strategie-de-tests.md`.
+
+### Documentation qualité
+
+| Document | Contenu |
+|---|---|
+| `docs/qualite/tp1-diagnostic.md` | État des lieux ISO 25010, dette technique, definition of done |
+| `docs/qualite/tp2-strategie-de-tests.md` | Cas couverts, seuils, procédure d'exécution, fiche de cas de test |
+| `docs/qualite/tp3-revue.md` | Checklist de revue appliquée et commentaires types |
 
 ---
 

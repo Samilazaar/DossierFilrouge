@@ -73,6 +73,9 @@ jobs:
           php-version: '8.4'
           extensions: ctype, iconv, mongodb, pdo, pdo_pgsql, pdo_sqlite
           tools: composer
+          # pcov : moteur de couverture. Sans lui, PHPUnit produit un rapport
+          # vide et la porte de qualité ci-dessous ne prouverait rien.
+          coverage: pcov
 
       - name: Cache des dépendances Composer
         uses: actions/cache@v4
@@ -112,7 +115,28 @@ jobs:
           php bin/console doctrine:schema:create --env=test
 
       - name: Tests PHPUnit
-        run: vendor/bin/phpunit --testdox
+        run: |
+          mkdir -p var/coverage
+          vendor/bin/phpunit --testdox \
+            --coverage-clover var/coverage/clover.xml \
+            --coverage-html var/coverage/html
+
+      # Porte de qualité : plancher global contre l'effondrement, exigence
+      # forte sur le cœur métier. Les seuils et leur justification sont dans
+      # EC04/skillhub/docs/qualite/tp2-strategie-de-tests.md.
+      # Un seuil non tenu ferme la porte : le job échoue, la fusion est bloquée.
+      - name: Seuils de couverture
+        run: php tools/verifier-couverture.php var/coverage/clover.xml
+
+      # Le rapport reste consultable 14 jours depuis l'onglet Actions, même
+      # quand le job a échoué : c'est lui qui montre les zones non couvertes.
+      - name: Publication du rapport de couverture
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: couverture-${{ github.sha }}
+          path: EC04/skillhub/var/coverage/
+          retention-days: 14
 
   # -------------------------------------------------------------------
   # 2. SÉCURITÉ — pipeline séparé (security.yml), appelé si les tests passent.

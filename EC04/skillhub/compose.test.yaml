@@ -1,0 +1,23 @@
+# Base de données jetable pour les tests d'intégration.
+#
+# Neuve à chaque démarrage, en mémoire vive (tmpfs) donc rapide, sur un port
+# dédié pour ne jamais entrer en conflit avec la base de développement.
+# Aucun volume : à l'arrêt du conteneur, tout disparaît. Un test ne peut donc
+# pas être pollué par l'exécution précédente.
+services:
+  base-test:
+    image: postgres:16-alpine
+    container_name: skillhub-base-test
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    ports:
+      - "55432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app"]
+      interval: 3s
+      timeout: 3s
+      retries: 10

@@ -1,0 +1,8 @@
+Couverture globale     : 11.50 %  (plancher 20 %)
+Couverture cœur métier : 45.00 %  (exigence 90 %)
+  - Atelier.php                  45.00 %
+
+PORTE DE QUALITÉ FERMÉE :
+  - couverture globale 11.50 % sous le plancher de 20 %
+  - couverture du cœur métier 45.00 % sous l'exigence de 90 %
+exit=1
